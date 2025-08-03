@@ -8,18 +8,15 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".PanelActivity">
 
-    <Button
-        android:id="@+id/loginButton"
-        android:layout_width="128dp"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="50dp"
-        android:background="@drawable/custom_button_by_alip"
-        android:padding="12dp"
-        android:text="Login"
-        android:textColor="#FFFFFF"
-        tools:ignore="MissingConstraints" />
+        android:text="Welcome to Panel Admin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </LinearLayout>
