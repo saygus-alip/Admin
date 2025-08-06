@@ -1,9 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Base.Theme.Admin" parent="Theme.Material3.Dark.NoActionBar">
         <item name="colorPrimary">@color/fill_blue_bg</item>
-        <item name="colorOnPrimary">@color/fill_blue_text</item>
-        <item name="android:colorBackground">@color/android_studio_bg</item>
-        <item name="colorSurface">@color/android_studio_bg</item>
-        <item name="colorOnSurface">@color/fill_blue_text</item>
+        <item name="colorSecondary">@color/fill_blue_bg</item>
+    </style>
+    <style name="Theme.Admin.WithActionBar" parent="Theme.Material3.Dark">
+        <item name="colorPrimary">@color/fill_blue_bg</item>
+        <item name="colorSecondary">@color/fill_blue_bg</item>
     </style>
 </resources>

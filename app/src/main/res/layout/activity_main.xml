@@ -16,11 +16,9 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login"
-        android:textColor="@android:color/white"
+        android:text="Admin"
         android:textSize="36sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="32dp" />
+        android:textStyle="bold" android:layout_marginBottom="32dp" />
 
     <EditText
         android:id="@+id/usernameInput"
@@ -30,8 +28,6 @@
         android:padding="12dp"
         android:hint="Enter your username"
         android:inputType="text"
-        android:textColor="@android:color/white"
-        android:textColorHint="#999999"
         android:background="@drawable/custom_edittext_bg"/>
 
     <EditText
@@ -42,8 +38,6 @@
         android:padding="12dp"
         android:hint="Enter password"
         android:inputType="textPassword"
-        android:textColor="@android:color/white"
-        android:textColorHint="#999999"
         android:background="@drawable/custom_edittext_bg"/>
 
     <CheckBox
@@ -53,15 +47,13 @@
         android:layout_gravity="start"
         android:layout_marginStart="4dp"
         android:layout_marginBottom="32dp"
-        android:text="Remember Me"
-        android:textColor="@android:color/white"/>
+        android:text="Remember Me" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/loginButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/custom_button_by_alip"
-        android:text="Login"
-        android:textColor="#FFFFFF" />
+        app:backgroundTint="@null" android:background="@drawable/custom_button_by_alip"
+        android:text="Login" />
 
 </LinearLayout>

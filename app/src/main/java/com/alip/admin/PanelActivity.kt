@@ -8,32 +8,14 @@ import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import com.alip.admin.Internet.NetworkConnectivityObserver
 import com.alip.admin.databinding.ActivityPanelBinding
 import androidx.activity.OnBackPressedCallback
-
+import android.view.MenuItem // ยังคงจำเป็นสำหรับการจัดการปุ่มเมนูบน Toolbar
+ 
 class PanelActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityPanelBinding
-    private lateinit var slidingPaneLayout: SlidingPaneLayout
     private lateinit var networkObserver: NetworkConnectivityObserver
     private var noInternetDialog: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityPanelBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        slidingPaneLayout = binding.root as SlidingPaneLayout
-
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (slidingPaneLayout.isSlideable && slidingPaneLayout.isOpen) {
-                    slidingPaneLayout.close()
-                } else {
-                    isEnabled = false
-                    onBackPressedDispatcher.onBackPressed()
-                }
-            }
-        })
-
         networkObserver = NetworkConnectivityObserver(this)
         networkObserver.register { isConnected ->
             if (isConnected) {
@@ -47,6 +29,7 @@ class PanelActivity : AppCompatActivity() {
         }
     }
 
+    // เมธอดสำหรับแสดง Dialog เมื่อไม่มีอินเทอร์เน็ต (ยังคงจำเป็น)
     private fun showNoInternetDialog() {
         if (noInternetDialog == null) {
             noInternetDialog = AlertDialog.Builder(this)
@@ -58,6 +41,7 @@ class PanelActivity : AppCompatActivity() {
         noInternetDialog?.show()
     }
 
+    // เมธอด onDestroy สำหรับยกเลิกการลงทะเบียน NetworkObserver (ยังคงจำเป็น)
     override fun onDestroy() {
         super.onDestroy()
         networkObserver.unregister()

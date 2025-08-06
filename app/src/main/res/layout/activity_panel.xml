@@ -1,52 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.slidingpanelayout.widget.SlidingPaneLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/sliding_pane_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".PanelActivity">
 
-    <LinearLayout
-        android:layout_width="250dp"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@android:color/darker_gray"
-        android:padding="16dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="เมนู 1"
-            android:textSize="18sp"
-            android:layout_marginBottom="8dp"
-            android:textColor="@android:color/white"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="เมนู 2"
-            android:textSize="18sp"
-            android:layout_marginBottom="8dp"
-            android:textColor="@android:color/white"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:background="@android:color/white">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="หน้าหลักของแอป"
-            android:textSize="24sp"
-            android:padding="16dp"
-            android:textColor="@android:color/black"/>
-
-    </LinearLayout>
 
 </androidx.slidingpanelayout.widget.SlidingPaneLayout>

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="android_studio_bg">#2B2B2B</color>
-    <color name="outline_blue">#00A3FF</color>
-    <color name="outline_blue_pressed">#00A3FF</color>
-    <color name="fill_blue_bg">#00A3FF</color>
-    <color name="fill_blue_text">#2B2B2B</color>
+    <color name="android_studio_bg">#212121</color>
+    <color name="fill_blue_bg">#00EFFF</color>
+    <color name="white_smoke">#F5F5F5</color>
+
 </resources>
