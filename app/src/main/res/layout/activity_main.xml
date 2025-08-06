@@ -1,65 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#2B2B2B"
+    android:padding="16dp"
     tools:context=".MainActivity">
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="200dp"
         android:text="Login"
-        android:textColor="@color/fill_blue_bg"
+        android:textColor="@android:color/white"
         android:textSize="36sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginBottom="32dp" />
 
     <EditText
-        android:id="@+id/usernameEditText"
-        android:layout_width="0dp"
+        android:id="@+id/usernameInput"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:hint="ชื่อผู้ใช้งาน"
+        android:layout_marginBottom="16dp"
+        android:padding="12dp"
+        android:hint="Enter your username"
         android:inputType="text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        android:textColor="@android:color/white"
+        android:textColorHint="#999999"
+        android:background="@drawable/custom_edittext_bg"/>
+
+    <EditText
+        android:id="@+id/passwordInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:padding="12dp"
+        android:hint="Enter password"
+        android:inputType="textPassword"
+        android:textColor="@android:color/white"
+        android:textColorHint="#999999"
+        android:background="@drawable/custom_edittext_bg"/>
 
     <CheckBox
         android:id="@+id/acceptTermsCheckBox"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="32dp"
-        android:text="ฉันยอมรับเงื่อนไขและข้อตกลง"
-        android:textColor="@color/fill_blue_bg"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/usernameEditText" />
+        android:layout_gravity="start"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="32dp"
+        android:text="Remember Me"
+        android:textColor="@android:color/white"/>
 
     <Button
         android:id="@+id/loginButton"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
         android:background="@drawable/custom_button_by_alip"
         android:text="Login"
-        android:textColor="#FFFFFF"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/acceptTermsCheckBox" />
+        android:textColor="#FFFFFF" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
-
+</LinearLayout>
