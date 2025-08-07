@@ -1,21 +1,30 @@
 package com.alip.admin
 
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.alip.admin.databinding.ActivityMainBinding
 import android.content.Intent
-import android.util.Log
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
 import androidx.appcompat.app.AlertDialog
 import android.app.Dialog
 import com.alip.admin.Internet.NetworkUtils
 import com.alip.admin.Internet.NetworkConnectivityObserver
-import com.alip.admin.LoadingSpinnerFragment
 import android.widget.Toast
-import androidx.core.text.HtmlCompat
 import android.text.method.LinkMovementMethod
 import android.widget.TextView
+import android.net.Uri
+import android.view.LayoutInflater
+import android.text.Spannable
+import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
+import android.view.View
+import android.graphics.Typeface
+import androidx.core.content.ContextCompat
+import android.text.SpannableStringBuilder
+import android.text.TextPaint
+import android.util.TypedValue
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -98,32 +107,88 @@ class MainActivity : AppCompatActivity() {
         if (noInternetDialog == null) {
             noInternetDialog = AlertDialog.Builder(this)
                 .setTitle("Notice")
+                .setIcon(R.drawable.ic_eazy)
                 .setMessage("No internet connection found. Please check your network settings.")
                 .setCancelable(false)
+                .setPositiveButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                }
                 .create()
         }
         noInternetDialog?.show()
     }
 
+    // data class ที่เก็บ ชื่อ, ชื่อลิงก์ และลิงก์จริง
+    data class ContactInfo(val name: String, val linkText: String, val url: String)
+
+    @SuppressLint("ResourceAsColor")
     private fun showSellerInfoDialog() {
-        val message = HtmlCompat.fromHtml(
-            """
-            <b>สร้างโดย:</b><br/>
-            ชื่อผู้ขาย<br/><br/>
-            <b>ติดต่อ:</b><br/>
-            <a href="mailto:your.email@example.com">your.email@example.com</a>
-            """, HtmlCompat.FROM_HTML_MODE_LEGACY
+        // สร้าง List ที่เก็บข้อมูลทั้ง 3 ส่วน
+        val contactList = listOf(
+            ContactInfo("Contact channel for creators Click the link to contact", "Seller OFFICIAL", ""),
+            ContactInfo("SayGus", "facebook.com/tan.cham", "https://www.facebook.com/tanwa.chamnandong.7"),
+            ContactInfo("Instagram", "instagram.com/alip.tanwaa", "https://instagram.com/alip.tanwaa"), // <<--- แก้ไขตรงนี้
+            ContactInfo("Telegram", "t.me/saygusthai", "https://t.me/saygusthai"), // <<--- แก้ไขตรงนี้
+            ContactInfo("Whatsapp", "wa.me/+66813465042", "https://wa.me/+66813465042"), // <<--- แก้ไขตรงนี้
+            ContactInfo("Youtube", "youtube.com/@saygusthai", "https://www.youtube.com/@saygusthai"),
+            ContactInfo("Youtube Live", "youtube.com/streams", "https://www.youtube.com/@AlipYummy/streams"),
+            ContactInfo("Github", "github.com/saygus-alip", "https://github.com/saygus-alip")
         )
 
+        val inflater = LayoutInflater.from(this)
+        val customView = inflater.inflate(R.layout.dialog_seller, null)
+        val sellerInfoTextView = customView.findViewById<TextView>(R.id.sellerInfoTextView)
+
+        val spannableStringBuilder = SpannableStringBuilder()
+        val linkColor = ContextCompat.getColor(this, R.color.fill_blue_bg)
+
+        contactList.forEachIndexed { index, info ->
+            val nameText = info.name
+            spannableStringBuilder.append(nameText)
+            spannableStringBuilder.append("\n\n")
+
+            val linkText = info.linkText
+            val linkStart = spannableStringBuilder.length
+            spannableStringBuilder.append(linkText)
+            val linkEnd = spannableStringBuilder.length
+
+            val clickableSpan = object : ClickableSpan() {
+                override fun onClick(widget: View) {
+                    // แก้ไขตรงนี้: เพิ่มการตรวจสอบ URL ก่อนเปิด
+                    var url = info.url
+                    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                        url = "https://" + url
+                    }
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    startActivity(intent)
+                }
+                override fun updateDrawState(ds: TextPaint) {
+                    super.updateDrawState(ds)
+                    ds.isUnderlineText = false
+                }
+            }
+            spannableStringBuilder.setSpan(clickableSpan, linkStart, linkEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            spannableStringBuilder.setSpan(ForegroundColorSpan(linkColor), linkStart, linkEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            if (index < contactList.size - 1) {
+                spannableStringBuilder.append("\n\n")
+            }
+        }
+
+        sellerInfoTextView.text = spannableStringBuilder
+        sellerInfoTextView.movementMethod = LinkMovementMethod.getInstance()
+        sellerInfoTextView.highlightColor = android.R.color.transparent
+        sellerInfoTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+
         AlertDialog.Builder(this)
-            .setTitle("Notice: This app is for sellers only")
-            .setMessage(message)
+            .setTitle("Notice! This app is for sellers only")
+            .setIcon(R.drawable.ic_eazy)
+            .setView(customView)
+            .setCancelable(false)
             .setPositiveButton("OK") { dialog, _ ->
                 dialog.dismiss()
             }
-            .show().apply {
-                findViewById<TextView>(android.R.id.message)?.movementMethod = LinkMovementMethod.getInstance()
-            }
+            .show()
     }
 
     override fun onDestroy() {

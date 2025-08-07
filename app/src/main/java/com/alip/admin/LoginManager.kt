@@ -25,7 +25,18 @@ class LoginManager(private val context: Context) {
     }
 
     fun logout() {
+        // ล้างข้อมูลทั้งหมดใน SharedPreferences
         prefs.edit().clear().apply()
+    }
+
+    // เมธอดใหม่: ใช้สำหรับดึงค่า Username ของผู้ใช้ที่เข้าสู่ระบบอยู่
+    fun getLoggedInUsername(): String? {
+        return prefs.getString(KEY_LOGGED_IN_USERNAME, null)
+    }
+
+    // เมธอดใหม่: ใช้สำหรับดึงค่า DeviceID ของเครื่องปัจจุบัน
+    fun getCurrentDeviceId(): String {
+        return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
     fun loginWithUsername(username: String, password: String, onComplete: (Boolean, String?) -> Unit) {
@@ -40,15 +51,13 @@ class LoginManager(private val context: Context) {
 
                     if (hashedPassword != null && BCrypt.checkpw(password, hashedPassword)) {
                         val storedDeviceId = document.getString("DeviceID")
-                        val currentDeviceId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+                        val currentDeviceId = getCurrentDeviceId() // ใช้เมธอดใหม่ที่สร้างขึ้น
 
-                        // เพิ่ม Log เพื่อดูค่า DeviceID ที่ดึงมาจากเครื่อง
                         Log.d("LoginDebug", "Current Device ID: $currentDeviceId")
                         Log.d("LoginDebug", "Stored Device ID: $storedDeviceId")
 
                         if (storedDeviceId == null || storedDeviceId.isEmpty() || storedDeviceId == currentDeviceId) {
 
-                            // แก้ไขโค้ดส่วนการอัปเดตข้อมูล
                             document.reference.update("DeviceID", currentDeviceId)
                                 .addOnSuccessListener {
                                     Log.d("LoginDebug", "DeviceID updated successfully.")
@@ -62,23 +71,22 @@ class LoginManager(private val context: Context) {
                                     onComplete(true, null)
                                 }
                                 .addOnFailureListener { exception ->
-                                    // เพิ่ม Log เพื่อแสดง Error หากอัปเดตล้มเหลว
                                     Log.e("LoginError", "Failed to update DeviceID: ", exception)
-                                    onComplete(false, "เกิดข้อผิดพลาดในการบันทึกข้อมูลเครื่อง")
+                                    onComplete(false, "An error occurred while saving the device data.")
                                 }
                         } else {
-                            onComplete(false, "บัญชีนี้มีการใช้งานบนเครื่องอื่นอยู่แล้ว")
+                            onComplete(false, "This account is already in use on another device.")
                         }
                     } else {
-                        onComplete(false, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
+                        onComplete(false, "Username or password is incorrect.")
                     }
                 } else {
-                    onComplete(false, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
+                    onComplete(false, "Username or password is incorrect.")
                 }
             }
             .addOnFailureListener { exception ->
                 Log.e("FirestoreError", "Login failed", exception)
-                onComplete(false, "เกิดข้อผิดพลาดในการเข้าสู่ระบบ")
+                onComplete(false, "An error occurred logging in.")
             }
     }
 }

@@ -1,52 +1,80 @@
 package com.alip.admin
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
-import android.app.Dialog
-import androidx.slidingpanelayout.widget.SlidingPaneLayout
-import com.alip.admin.Internet.NetworkConnectivityObserver
-import com.alip.admin.databinding.ActivityPanelBinding
-import androidx.activity.OnBackPressedCallback
-import android.view.MenuItem // ยังคงจำเป็นสำหรับการจัดการปุ่มเมนูบน Toolbar
- 
+import android.widget.Toast
+import com.alip.admin.R
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+
 class PanelActivity : AppCompatActivity() {
-    private lateinit var networkObserver: NetworkConnectivityObserver
-    private var noInternetDialog: Dialog? = null
+
+    private lateinit var loginManager: LoginManager
+    private val db = Firebase.firestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        networkObserver = NetworkConnectivityObserver(this)
-        networkObserver.register { isConnected ->
-            if (isConnected) {
-                noInternetDialog?.dismiss()
-                noInternetDialog = null
-            } else {
-                if (noInternetDialog == null || !noInternetDialog!!.isShowing) {
-                    showNoInternetDialog()
+        setContentView(R.layout.activity_panel) // ใช้ layout ของหน้า PanelActivity
+
+        loginManager = LoginManager(this)
+
+        // ... (โค้ดอื่นๆ ใน onCreate เช่น การกำหนดค่า View หรือ Listener ต่างๆ)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // เรียกเมธอดตรวจสอบ DeviceID ทุกครั้งที่ Activity กลับมาทำงาน (onResume)
+        checkDeviceID()
+    }
+
+    private fun checkDeviceID() {
+        val username = loginManager.getLoggedInUsername()
+
+        // ตรวจสอบว่ามีผู้ใช้เข้าสู่ระบบอยู่หรือไม่
+        if (username != null) {
+            db.collection("Sellers")
+                .whereEqualTo("Username", username)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (!documents.isEmpty) {
+                        val document = documents.documents[0]
+                        val storedDeviceId = document.getString("DeviceID")
+                        val currentDeviceId = loginManager.getCurrentDeviceId()
+
+                        // ถ้า DeviceID ที่เก็บใน Firestore ไม่ตรงกับ DeviceID ของเครื่องปัจจุบัน
+                        if (storedDeviceId != null && storedDeviceId != currentDeviceId) {
+                            // สั่ง Logout ทันที
+                            loginManager.logout()
+                            Toast.makeText(this, "Your account is already logged in on another device.", Toast.LENGTH_LONG).show()
+
+                            // ย้ายไปยังหน้า Login และเคลียร์ Activity Stack
+                            val intent = Intent(this, MainActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                            finish()
+                        }
+                    } else {
+                        // กรณีหาข้อมูลผู้ใช้ใน Firestore ไม่เจอ
+                        logoutAndRedirect()
+                    }
                 }
-            }
+                .addOnFailureListener {
+                    // กรณีเกิดข้อผิดพลาดในการดึงข้อมูลจาก Firestore
+                    logoutAndRedirect()
+                }
+        } else {
+            // กรณีไม่มี Username แสดงว่าไม่ได้ล็อกอินอยู่
+            logoutAndRedirect()
         }
     }
 
-    // เมธอดสำหรับแสดง Dialog เมื่อไม่มีอินเทอร์เน็ต (ยังคงจำเป็น)
-    private fun showNoInternetDialog() {
-        if (noInternetDialog == null) {
-            noInternetDialog = AlertDialog.Builder(this)
-                .setTitle("Notice")
-                .setMessage("No internet connection found. Please check your network settings.")
-                .setCancelable(false)
-                .create()
-        }
-        noInternetDialog?.show()
-    }
-
-    // เมธอด onDestroy สำหรับยกเลิกการลงทะเบียน NetworkObserver (ยังคงจำเป็น)
-    override fun onDestroy() {
-        super.onDestroy()
-        networkObserver.unregister()
-        if (noInternetDialog?.isShowing == true) {
-            noInternetDialog?.dismiss()
-        }
+    // เมธอดช่วยในการ Logout และย้ายไปยังหน้า Login
+    private fun logoutAndRedirect() {
+        loginManager.logout()
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 }

@@ -7,18 +7,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:background="#2B2B2B"
-    android:padding="16dp"
+    android:background="#1C1C1E"
+    android:paddingTop="48dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="16dp"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Admin"
-        android:textSize="36sp"
-        android:textStyle="bold" android:layout_marginBottom="32dp" />
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Admin v1.0"
+            android:textColor="@color/fill_blue_bg"
+            android:paddingTop="28dp"
+            android:textSize="32sp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You must be a customer to have access"
+            android:padding="0dp"
+            android:textSize="14sp"
+            android:textColor="#B22222"
+            android:gravity="center"
+            android:layout_marginBottom="42dp" />
+
+    </LinearLayout>
+
 
     <EditText
         android:id="@+id/usernameInput"
@@ -28,7 +54,8 @@
         android:padding="12dp"
         android:hint="Enter your username"
         android:inputType="text"
-        android:background="@drawable/custom_edittext_bg"/>
+        android:background="@drawable/custom_edittext_bg"
+        android:drawableEnd="@drawable/ic_user"/>
 
     <EditText
         android:id="@+id/passwordInput"
@@ -38,22 +65,46 @@
         android:padding="12dp"
         android:hint="Enter password"
         android:inputType="textPassword"
-        android:background="@drawable/custom_edittext_bg"/>
-
-    <CheckBox
-        android:id="@+id/acceptTermsCheckBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:layout_marginStart="4dp"
-        android:layout_marginBottom="32dp"
-        android:text="Remember Me" />
+        android:background="@drawable/custom_edittext_bg"
+        android:drawableEnd="@drawable/ic_password"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/loginButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:backgroundTint="@null" android:background="@drawable/custom_button_by_alip"
-        android:text="Login" />
+        app:backgroundTint="@null"
+        android:background="@drawable/custom_button_by_alip"
+        android:padding="12dp"
+        android:text="Login"
+        android:textSize="16dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingTop="32dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You are not registered yet?  "
+            android:textSize="10dp">
+
+        </TextView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="@color/fill_blue_bg"
+            android:text="Talk to administrator"
+            android:textSize="10dp">
+
+        </TextView>
+
+
+    </LinearLayout>
 
 </LinearLayout>
