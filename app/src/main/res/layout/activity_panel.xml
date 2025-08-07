@@ -1,12 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.slidingpanelayout.widget.SlidingPaneLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/sliding_pane_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#1C1C1E"
     tools:context=".PanelActivity">
 
+    <!-- แผงด้านซ้ายสำหรับเมนู (Left Pane) -->
+    <!-- ตั้งค่าความกว้างคงที่เพื่อให้สามารถลากได้ -->
+    <FrameLayout
+        android:id="@+id/left_pane"
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:background="#2A2A2D">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Left Pane - Menu"
+            android:textSize="24sp"
+            android:textColor="@android:color/white"
+            android:padding="16dp" />
+
+    </FrameLayout>
+
+    <!-- แผงด้านขวาสำหรับเนื้อหาหลัก (Right Pane) -->
+    <FrameLayout
+        android:id="@+id/right_pane"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#1C1C1E">
+
+        <!-- ปุ่มสำหรับเปิดเมนู -->
+        <Button
+            android:id="@+id/open_menu_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Open Left Menu"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="50dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Right Pane - Main Content"
+            android:textSize="24sp"
+            android:textColor="@android:color/white"
+            android:padding="16dp" />
+
+    </FrameLayout>
 
 </androidx.slidingpanelayout.widget.SlidingPaneLayout>

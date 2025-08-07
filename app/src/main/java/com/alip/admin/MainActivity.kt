@@ -38,6 +38,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val contactAdmin = findViewById<TextView>(R.id.contactAdmin)
+
         // สร้างและลงทะเบียน networkObserver
         networkObserver = NetworkConnectivityObserver(this)
         networkObserver.register { isConnected ->
@@ -101,14 +103,17 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        contactAdmin.setOnClickListener {
+            // เมื่อ TextView ถูกแตะ ให้เรียกเมธอด showSellerInfoDialog()
+            showSellerInfoDialog()
+        }
     }
 
     private fun showNoInternetDialog() {
         if (noInternetDialog == null) {
             noInternetDialog = AlertDialog.Builder(this)
-                .setTitle("Notice")
-                .setIcon(R.drawable.ic_eazy)
-                .setMessage("No internet connection found. Please check your network settings.")
+                .setTitle("Notice no internet")
                 .setCancelable(false)
                 .setPositiveButton("OK") { dialog, _ ->
                     dialog.dismiss()

@@ -1,9 +1,10 @@
 package com.alip.admin
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.content.Intent
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import com.alip.admin.R
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -12,14 +13,24 @@ class PanelActivity : AppCompatActivity() {
 
     private lateinit var loginManager: LoginManager
     private val db = Firebase.firestore
+    private lateinit var slidingPaneLayout: SlidingPaneLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_panel) // ใช้ layout ของหน้า PanelActivity
+        setContentView(R.layout.activity_panel)
 
+        // ค้นหา SlidingPaneLayout
+        slidingPaneLayout = findViewById(R.id.sliding_pane_layout)
+
+        // Initialize LoginManager
         loginManager = LoginManager(this)
 
         // ... (โค้ดอื่นๆ ใน onCreate เช่น การกำหนดค่า View หรือ Listener ต่างๆ)
+        // คุณสามารถเพิ่มโค้ดสำหรับปุ่มเปิดเมนูที่นี่ได้
+        // val openMenuButton = findViewById<Button>(R.id.open_menu_button)
+        // openMenuButton.setOnClickListener {
+        //     slidingPaneLayout.open()
+        // }
     }
 
     override fun onResume() {
