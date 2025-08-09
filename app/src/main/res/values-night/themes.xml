@@ -5,12 +5,14 @@
         <item name="android:textColorPrimary">@color/white_smoke</item>
         <item name="android:textColorSecondary">@color/my_text_color</item>
         <item name="android:fontFamily">@font/regular</item>
+        <item name="android:statusBarColor">@color/fill_blue_bg</item>
     </style>
-    <style name="Theme.Admin.WithActionBar" parent="Theme.Material3.Dark">
+    <style name="Theme.Admin.WithActionBar" parent="Theme.Material3.Dark.NoActionBar">
         <item name="colorPrimary">@color/fill_blue_bg</item>
         <item name="colorSecondary">@color/fill_blue_bg</item>
         <item name="android:textColorPrimary">@color/white_smoke</item>
         <item name="android:textColorSecondary">@color/my_text_color</item>
         <item name="android:fontFamily">@font/regular</item>
+        <item name="android:statusBarColor">@color/fill_blue_bg</item>
     </style>
 </resources>

@@ -1,48 +1,162 @@
 package com.alip.admin
 
-import android.os.Bundle
 import android.content.Intent
+import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.slidingpanelayout.widget.SlidingPaneLayout
-import com.alip.admin.R
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.fragment.app.Fragment
+import com.alip.admin.databinding.ActivityPanelBinding
+import com.alip.admin.Fragment.AddUserFragment
+import com.alip.admin.Fragment.ChangePasswordFragment
+import com.alip.admin.Fragment.ExportUserFragment
+import com.alip.admin.Fragment.RenewUserFragment
+import com.alip.admin.Fragment.SearchUserFragment
+import com.alip.admin.Fragment.SettingFragment
+import android.content.res.ColorStateList
+import android.widget.ImageButton
+import androidx.appcompat.app.AlertDialog
+import android.view.View
 
 class PanelActivity : AppCompatActivity() {
 
     private lateinit var loginManager: LoginManager
     private val db = Firebase.firestore
-    private lateinit var slidingPaneLayout: SlidingPaneLayout
+
+    private lateinit var motionLayout: MotionLayout
+    private lateinit var binding: ActivityPanelBinding
+
+    // ตัวแปรสำหรับเก็บ ImageButton ที่ถูกเลือกในปัจจุบัน (สำหรับ Compact Menu)
+    private var activeCompactIcon: ImageButton? = null
+
+    // ตัวแปรสำหรับเก็บ View ที่ถูกเลือกในปัจจุบัน (สำหรับ Full Menu)
+    private var activeFullMenuItem: View? = null
+
+    // สีสำหรับไอคอนที่เลือกและไม่ถูกเลือก
+    private val selectedColor by lazy { resources.getColor(R.color.selected_icon_color, theme) }
+    private val defaultColor by lazy { resources.getColor(R.color.default_icon_color, theme) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_panel)
 
-        // ค้นหา SlidingPaneLayout
-        slidingPaneLayout = findViewById(R.id.sliding_pane_layout)
+        binding = ActivityPanelBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        // Initialize LoginManager
+        motionLayout = findViewById(R.id.motion_layout)
+
         loginManager = LoginManager(this)
 
-        // ... (โค้ดอื่นๆ ใน onCreate เช่น การกำหนดค่า View หรือ Listener ต่างๆ)
-        // คุณสามารถเพิ่มโค้ดสำหรับปุ่มเปิดเมนูที่นี่ได้
-        // val openMenuButton = findViewById<Button>(R.id.open_menu_button)
-        // openMenuButton.setOnClickListener {
-        //     slidingPaneLayout.open()
-        // }
+        setSupportActionBar(binding.toolbar)
+
+        // โหลด Fragment และตั้งค่าสีไอคอนเริ่มต้น
+        if (savedInstanceState == null) {
+            loadFragment(AddUserFragment())
+            setActiveIcon(binding.iconAdd, binding.fullMenuAddUserContainer)
+        }
+
+        setupMenuListeners()
     }
 
     override fun onResume() {
         super.onResume()
-        // เรียกเมธอดตรวจสอบ DeviceID ทุกครั้งที่ Activity กลับมาทำงาน (onResume)
         checkDeviceID()
+    }
+
+    /**
+     * ตั้งค่า Listener สำหรับปุ่มต่างๆ ใน Compact Menu และ Full Menu
+     */
+    private fun setupMenuListeners() {
+        // Listeners สำหรับ Compact Menu
+        binding.iconAdd.setOnClickListener { selectMenuItem(AddUserFragment(), binding.iconAdd, binding.fullMenuAddUserContainer) }
+        binding.iconSetting.setOnClickListener { selectMenuItem(SettingFragment(), binding.iconSetting, binding.fullMenuSettingContainer) }
+        binding.iconPass.setOnClickListener { selectMenuItem(ChangePasswordFragment(), binding.iconPass, binding.fullMenuPassContainer) }
+        binding.iconClock.setOnClickListener { selectMenuItem(RenewUserFragment(), binding.iconClock, binding.fullMenuClockContainer) }
+        binding.iconGroup.setOnClickListener { selectMenuItem(SearchUserFragment(), binding.iconGroup, binding.fullMenuGroupContainer) }
+        binding.iconUpload.setOnClickListener { selectMenuItem(ExportUserFragment(), binding.iconUpload, binding.fullMenuUploadContainer) }
+        binding.iconExit.setOnClickListener { showLogoutConfirmationDialog() }
+
+        // Listeners สำหรับ Full Menu
+        binding.fullMenuAddUserContainer.setOnClickListener { selectMenuItem(AddUserFragment(), binding.iconAdd, binding.fullMenuAddUserContainer) }
+        binding.fullMenuSettingContainer.setOnClickListener { selectMenuItem(SettingFragment(), binding.iconSetting, binding.fullMenuSettingContainer) }
+        binding.fullMenuPassContainer.setOnClickListener { selectMenuItem(ChangePasswordFragment(), binding.iconPass, binding.fullMenuPassContainer) }
+        binding.fullMenuClockContainer.setOnClickListener { selectMenuItem(RenewUserFragment(), binding.iconClock, binding.fullMenuClockContainer) }
+        binding.fullMenuGroupContainer.setOnClickListener { selectMenuItem(SearchUserFragment(), binding.iconGroup, binding.fullMenuGroupContainer) }
+        binding.fullMenuUploadContainer.setOnClickListener { selectMenuItem(ExportUserFragment(), binding.iconUpload, binding.fullMenuUploadContainer) }
+        binding.fullMenuExitContainer.setOnClickListener { showLogoutConfirmationDialog() }
+    }
+
+    /**
+     * ฟังก์ชันสำหรับจัดการการเลือกเมนู
+     * - โหลด Fragment ใหม่
+     * - อัปเดตการแสดงผลของไอคอนที่ถูกเลือก
+     * - ปิดเมนูแบบเต็มโดยใช้แอนิเมชัน
+     *
+     * @param fragment Fragment ที่ต้องการแสดงผล
+     * @param compactIcon ImageButton ของเมนูแบบย่อ
+     * @param fullMenuItem View ของเมนูแบบเต็ม
+     */
+    private fun selectMenuItem(fragment: Fragment, compactIcon: ImageButton, fullMenuItem: View) {
+        // โหลด Fragment ใหม่เข้าไปใน FragmentContainerView
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
+
+        // อัปเดตสีของไอคอน
+        setActiveIcon(compactIcon, fullMenuItem)
+
+        // สั่งให้ MotionLayout กลับไปที่สถานะเริ่มต้น (เมนูแบบย่อ)
+        motionLayout.transitionToStart()
+    }
+
+    /**
+     * ฟังก์ชันสำหรับจัดการการเปลี่ยนสีไอคอนและพื้นหลังเมนูที่ถูกเลือก
+     * - เปลี่ยนสีไอคอนและพื้นหลังที่เคยถูกเลือกให้กลับเป็นสีปกติ
+     * - เปลี่ยนสีไอคอนและพื้นหลังที่เพิ่งถูกกดให้เป็นสี Active
+     *
+     * @param compactIcon ImageButton ที่เพิ่งถูกกดในเมนูแบบย่อ
+     * @param fullMenuItem View ที่เพิ่งถูกกดในเมนูแบบเต็ม
+     */
+    private fun setActiveIcon(compactIcon: ImageButton, fullMenuItem: View) {
+        // เปลี่ยนสีไอคอนที่เคยถูกเลือกกลับเป็นสี Inactive
+        activeCompactIcon?.drawable?.setTintList(ColorStateList.valueOf(defaultColor))
+        activeFullMenuItem?.setBackgroundResource(android.R.color.transparent)
+
+        // เปลี่ยนสีไอคอนที่เพิ่งถูกกดให้เป็นสี Active และเปลี่ยนพื้นหลัง
+        compactIcon.drawable?.setTintList(ColorStateList.valueOf(selectedColor))
+        fullMenuItem.setBackgroundResource(R.drawable.menu_selected_background) // สมมติว่ามี drawable ชื่อนี้
+
+        // อัปเดตตัวแปร activeIcon ให้ชี้ไปที่ไอคอนที่เพิ่งถูกกด
+        activeCompactIcon = compactIcon
+        activeFullMenuItem = fullMenuItem
+    }
+
+    /**
+     * แสดงหน้าต่างยืนยันการออกจากระบบ
+     */
+    private fun showLogoutConfirmationDialog() {
+        AlertDialog.Builder(this)
+            .setIcon(R.drawable.ic_eazy)
+            .setTitle("Notice")
+            .setMessage("You want to Logout Account?")
+            .setCancelable(false)
+            .setPositiveButton("Yes") { dialog, which ->
+                logoutAndRedirect()
+            }
+            .setNegativeButton("No", null)
+            .show()
+    }
+
+    private fun loadFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
     }
 
     private fun checkDeviceID() {
         val username = loginManager.getLoggedInUsername()
 
-        // ตรวจสอบว่ามีผู้ใช้เข้าสู่ระบบอยู่หรือไม่
         if (username != null) {
             db.collection("Sellers")
                 .whereEqualTo("Username", username)
@@ -53,34 +167,27 @@ class PanelActivity : AppCompatActivity() {
                         val storedDeviceId = document.getString("DeviceID")
                         val currentDeviceId = loginManager.getCurrentDeviceId()
 
-                        // ถ้า DeviceID ที่เก็บใน Firestore ไม่ตรงกับ DeviceID ของเครื่องปัจจุบัน
                         if (storedDeviceId != null && storedDeviceId != currentDeviceId) {
-                            // สั่ง Logout ทันที
                             loginManager.logout()
                             Toast.makeText(this, "Your account is already logged in on another device.", Toast.LENGTH_LONG).show()
 
-                            // ย้ายไปยังหน้า Login และเคลียร์ Activity Stack
                             val intent = Intent(this, MainActivity::class.java)
                             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             startActivity(intent)
                             finish()
                         }
                     } else {
-                        // กรณีหาข้อมูลผู้ใช้ใน Firestore ไม่เจอ
                         logoutAndRedirect()
                     }
                 }
                 .addOnFailureListener {
-                    // กรณีเกิดข้อผิดพลาดในการดึงข้อมูลจาก Firestore
                     logoutAndRedirect()
                 }
         } else {
-            // กรณีไม่มี Username แสดงว่าไม่ได้ล็อกอินอยู่
             logoutAndRedirect()
         }
     }
 
-    // เมธอดช่วยในการ Logout และย้ายไปยังหน้า Login
     private fun logoutAndRedirect() {
         loginManager.logout()
         val intent = Intent(this, MainActivity::class.java)

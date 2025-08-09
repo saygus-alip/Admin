@@ -1,57 +1,402 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.slidingpanelayout.widget.SlidingPaneLayout
+<androidx.constraintlayout.motion.widget.MotionLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/sliding_pane_layout"
+    android:id="@+id/motion_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1C1C1E"
+    android:fitsSystemWindows="true"
+    android:background="@color/android_studio_bg"
+    app:layoutDescription="@xml/scene_panel"
     tools:context=".PanelActivity">
 
-    <!-- แผงด้านซ้ายสำหรับเมนู (Left Pane) -->
-    <!-- ตั้งค่าความกว้างคงที่เพื่อให้สามารถลากได้ -->
-    <FrameLayout
-        android:id="@+id/left_pane"
-        android:layout_width="280dp"
-        android:layout_height="match_parent"
-        android:background="#2A2A2D">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Left Pane - Menu"
-            android:textSize="24sp"
-            android:textColor="@android:color/white"
-            android:padding="16dp" />
-
-    </FrameLayout>
-
-    <!-- แผงด้านขวาสำหรับเนื้อหาหลัก (Right Pane) -->
-    <FrameLayout
-        android:id="@+id/right_pane"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#1C1C1E">
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/android_studio_bg"
+        android:elevation="4dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="Alip Admin"
+        app:titleTextColor="#AAAAAA" />
 
-        <!-- ปุ่มสำหรับเปิดเมนู -->
-        <Button
-            android:id="@+id/open_menu_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Open Left Menu"
-            android:layout_gravity="center|top"
-            android:layout_marginTop="50dp"/>
+    <LinearLayout
+        android:id="@+id/compact_menu"
+        android:layout_width="80dp"
+        android:layout_height="0dp"
+        android:background="@color/android_studio_bg"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="4dp"
+        android:elevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageButton
+            android:id="@+id/icon_logo"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:src="@drawable/ic_eazy"
+            android:background="@null"
+            android:scaleType="centerCrop" />
+
+        <ImageButton
+            android:id="@+id/icon_add"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:gravity="center"
+            android:layout_marginBottom="4dp"
+            android:src="@drawable/ic_add"
+            android:background="@null" />
+
+        <ImageButton
+            android:id="@+id/icon_setting"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:gravity="center"
+            android:layout_marginBottom="4dp"
+            android:src="@drawable/ic_setting"
+            android:background="@null" />
+
+        <ImageButton
+            android:id="@+id/icon_pass"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:gravity="center"
+            android:layout_marginBottom="4dp"
+            android:src="@drawable/ic_pass"
+            android:background="@null" />
+
+        <ImageButton
+            android:id="@+id/icon_clock"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:gravity="center"
+            android:layout_marginBottom="4dp"
+            android:src="@drawable/ic_clock"
+            android:background="@null" />
+
+        <ImageButton
+            android:id="@+id/icon_group"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:gravity="center"
+            android:layout_marginBottom="4dp"
+            android:src="@drawable/ic_group"
+            android:background="@null" />
+
+        <ImageButton
+            android:id="@+id/icon_upload"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:gravity="center"
+            android:layout_marginBottom="4dp"
+            android:src="@drawable/ic_upload"
+            android:background="@null" />
+
+        <ImageButton
+            android:id="@+id/icon_exit"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:gravity="center"
+            android:layout_marginBottom="4dp"
+            android:src="@drawable/ic_exit"
+            android:background="@null" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/full_menu"
+        android:layout_width="250dp"
+        android:layout_height="0dp"
+        android:background="#2E2E2E"
+        android:elevation="8dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageButton
+            android:id="@+id/icon_full_logo"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:src="@drawable/ic_eazy"
+            android:background="@null"
+            android:scaleType="centerCrop" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/full_menu_user"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Right Pane - Main Content"
-            android:textSize="24sp"
-            android:textColor="@android:color/white"
-            android:padding="16dp" />
+            android:text="Navigation"
+            android:textColor="#AAAAAA"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp" />
 
-    </FrameLayout>
+        <TextView
+            android:id="@+id/full_menu_credit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Credits: "
+            android:textColor="#AAAAAA"
+            android:textSize="14sp"
+            android:paddingBottom="16dp"
+            android:paddingLeft="16dp" />
 
-</androidx.slidingpanelayout.widget.SlidingPaneLayout>
+        <View
+            android:id="@+id/divider_1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#555555" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <LinearLayout
+                android:id="@+id/full_menu_add_user_container"
+                android:layout_width="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageButton
+                    android:id="@+id/full_menu_icon_add_user"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_add"
+                    android:background="@null"
+                    android:contentDescription="Add users" />
+
+                <TextView
+                    android:id="@+id/text_add_user"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add Users"
+                    android:textColor="#AAAAAA"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/full_menu_setting_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageButton
+                    android:id="@+id/full_menu_icon_setting"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_setting"
+                    android:background="@null"
+                    android:contentDescription="Remover and Reset Users" />
+
+                <TextView
+                    android:id="@+id/text_setting_user"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Remover and Reset Users"
+                    android:textColor="#AAAAAA"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/full_menu_pass_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageButton
+                    android:id="@+id/full_menu_icon_pass"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_pass"
+                    android:background="@null"
+                    android:contentDescription="Change Password" />
+
+                <TextView
+                    android:id="@+id/text_change_password"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Change Password"
+                    android:textColor="#AAAAAA"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/full_menu_clock_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageButton
+                    android:id="@+id/full_menu_icon_clock"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_clock"
+                    android:background="@null"
+                    android:contentDescription="Renew Users" />
+
+                <TextView
+                    android:id="@+id/text_renew_users"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Renew Users"
+                    android:textColor="#AAAAAA"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/full_menu_group_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageButton
+                    android:id="@+id/full_menu_icon_group"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_group"
+                    android:background="@null"
+                    android:contentDescription="Search Users" />
+
+                <TextView
+                    android:id="@+id/text_search_users"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Search Users"
+                    android:textColor="#AAAAAA"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/full_menu_upload_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageButton
+                    android:id="@+id/full_menu_icon_upload"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_upload"
+                    android:background="@null"
+                    android:contentDescription="Export Users" />
+
+                <TextView
+                    android:id="@+id/text_export_users"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Export Users"
+                    android:textColor="#AAAAAA"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/full_menu_exit_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageButton
+                    android:id="@+id/full_menu_icon_exit"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_exit"
+                    android:background="@null"
+                    android:contentDescription="Logout" />
+
+                <TextView
+                    android:id="@+id/text_logout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Logout"
+                    android:textColor="#AAAAAA"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/divider_2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#555555" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:gravity="center" >
+
+            <ImageButton
+                android:id="@+id/icon_full_footer_logo"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_eazy"
+                android:background="@null"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:id="@+id/full_menu_footer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Alip Admin v1.0"
+                android:textColor="#AAAAAA"
+                android:textSize="12sp"
+                android:gravity="center_horizontal"
+                android:padding="8dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toEndOf="@id/compact_menu"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.motion.widget.MotionLayout>

@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="android_studio_bg">#212121</color>
+    <color name="android_studio_bg">#1C1C1E</color>
     <color name="fill_blue_bg">#00EFFF</color>
     <color name="white_smoke">#F5F5F5</color>
     <color name="my_text_color">#E0E0E0</color>
+    <color name="selected_icon_color">#001B3A</color>
+    <color name="default_icon_color">#AAAAAA</color>
+    <color name="menu_selected_background_color">#001B3A</color>
 </resources>
