@@ -9,32 +9,37 @@ import com.google.firebase.ktx.Firebase
 import org.mindrot.jbcrypt.BCrypt
 
 class LoginManager(private val context: Context) {
-
     private val db = Firebase.firestore
-    private val prefs: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-
+    private val sharedPreferences: SharedPreferences = context.getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
     companion object {
         private const val PREF_NAME = "LoginPrefs"
         private const val KEY_IS_LOGGED_IN = "isLoggedIn"
         private const val KEY_LOGGED_IN_USERNAME = "loggedInUsername"
         private const val KEY_LOGGED_IN_EMAIL = "loggedInEmail"
+        private const val KEY_LOGGED_IN_CREDIT = "loggedInCredit"
     }
+
 
     fun isLoggedIn(): Boolean {
-        return prefs.getBoolean(KEY_IS_LOGGED_IN, false)
+        return sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false)
     }
-
+    fun getLoggedInEmail(): String? {
+        return sharedPreferences.getString(KEY_LOGGED_IN_EMAIL, null)
+    }
     fun logout() {
-        // ล้างข้อมูลทั้งหมดใน SharedPreferences
-        prefs.edit().clear().apply()
+        sharedPreferences.edit().clear().apply()
     }
-
-    // เมธอดใหม่: ใช้สำหรับดึงค่า Username ของผู้ใช้ที่เข้าสู่ระบบอยู่
     fun getLoggedInUsername(): String? {
-        return prefs.getString(KEY_LOGGED_IN_USERNAME, null)
+        return sharedPreferences.getString(KEY_LOGGED_IN_USERNAME, null)
     }
-
-    // เมธอดใหม่: ใช้สำหรับดึงค่า DeviceID ของเครื่องปัจจุบัน
+    fun getLoggedInCredit(): Float {
+        return sharedPreferences.getFloat("credit_key_name", 0.0f)
+    }
+    fun updateCredit(creditValue: Float) {
+        val editor = sharedPreferences.edit()
+        editor.putFloat("credit_key_name", creditValue)
+        editor.apply()
+    }
     fun getCurrentDeviceId(): String {
         return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
     }
@@ -62,10 +67,12 @@ class LoginManager(private val context: Context) {
                                 .addOnSuccessListener {
                                     Log.d("LoginDebug", "DeviceID updated successfully.")
                                     val userEmail = document.getString("Email")
-                                    prefs.edit().apply {
+                                    val userCredit = document.getLong("Credit")?.toInt() ?: 0
+                                    sharedPreferences.edit().apply {
                                         putBoolean(KEY_IS_LOGGED_IN, true)
                                         putString(KEY_LOGGED_IN_USERNAME, username)
                                         putString(KEY_LOGGED_IN_EMAIL, userEmail)
+                                        putInt(KEY_LOGGED_IN_CREDIT, userCredit)
                                         apply()
                                     }
                                     onComplete(true, null)

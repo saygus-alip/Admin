@@ -3,17 +3,64 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:padding="16dp"
     android:background="@color/android_studio_bg"
     tools:context=".Fragment.SettingFragment">
 
-    <TextView
-        android:id="@+id/fragment_text"
-        android:layout_width="wrap_content"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutUsername"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Remover and Reset Users"
-        android:textColor="#AAAAAA"
-        android:textSize="24sp" />
+        android:layout_marginTop="16dp"
+        android:hint="Username"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/usernameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/remover"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:backgroundTint="@null"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/custom_button_by_alip"
+            android:layout_marginTop="24dp"
+            android:padding="12dp"
+            android:textColor="#E0E0E0"
+            android:text="Remover"
+            android:textSize="16dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/reset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:backgroundTint="@null"
+            android:layout_weight="1"
+            android:background="@drawable/custom_button_by_alip"
+            android:layout_marginTop="24dp"
+            android:padding="12dp"
+            android:textColor="#E0E0E0"
+            android:text="Reset"
+            android:textSize="16dp" />
+
+
+    </LinearLayout>
 
 </LinearLayout>

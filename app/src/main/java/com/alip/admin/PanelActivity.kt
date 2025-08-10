@@ -13,12 +13,14 @@ import com.alip.admin.Fragment.AddUserFragment
 import com.alip.admin.Fragment.ChangePasswordFragment
 import com.alip.admin.Fragment.ExportUserFragment
 import com.alip.admin.Fragment.RenewUserFragment
+import com.alip.admin.Fragment.ActivityLogFragment
 import com.alip.admin.Fragment.SearchUserFragment
 import com.alip.admin.Fragment.SettingFragment
 import android.content.res.ColorStateList
 import android.widget.ImageButton
 import androidx.appcompat.app.AlertDialog
 import android.view.View
+import android.widget.TextView
 
 class PanelActivity : AppCompatActivity() {
 
@@ -45,8 +47,15 @@ class PanelActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         motionLayout = findViewById(R.id.motion_layout)
-
         loginManager = LoginManager(this)
+
+        setupRealtimeListener()
+
+        val username = loginManager.getLoggedInUsername()
+        val credit = loginManager.getLoggedInCredit()
+
+        binding.fullMenuUser.text = "Seller: $username"
+        binding.fullMenuCredit.text = "Credit: $credit"
 
         setSupportActionBar(binding.toolbar)
 
@@ -57,6 +66,34 @@ class PanelActivity : AppCompatActivity() {
         }
 
         setupMenuListeners()
+    }
+
+    private fun setupRealtimeListener() {
+        val username = loginManager.getLoggedInUsername()
+
+        if (username != null) {
+            db.collection("Sellers")
+                .whereEqualTo("Username", username)
+                .addSnapshotListener { snapshots, e ->
+                    if (e != null) {
+                        Toast.makeText(this, "Error fetching data: ${e.message}", Toast.LENGTH_SHORT).show()
+                        return@addSnapshotListener
+                    }
+
+                    if (snapshots != null && !snapshots.isEmpty) {
+                        val document = snapshots.documents[0]
+                        val updatedUsername = document.getString("Username")
+                        val updatedCreditFromFirestore = document.getDouble("Credit")
+                        val creditToUpdate = updatedCreditFromFirestore?.toFloat() ?: 0.0f
+
+                        // อัปเดต UI ด้วยค่าใหม่
+                        binding.fullMenuUser.text = "Username: $updatedUsername"
+                        binding.fullMenuCredit.text = "Credit: $creditToUpdate"
+
+                        loginManager.updateCredit(creditToUpdate)
+                    }
+                }
+        }
     }
 
     override fun onResume() {
@@ -75,6 +112,7 @@ class PanelActivity : AppCompatActivity() {
         binding.iconClock.setOnClickListener { selectMenuItem(RenewUserFragment(), binding.iconClock, binding.fullMenuClockContainer) }
         binding.iconGroup.setOnClickListener { selectMenuItem(SearchUserFragment(), binding.iconGroup, binding.fullMenuGroupContainer) }
         binding.iconUpload.setOnClickListener { selectMenuItem(ExportUserFragment(), binding.iconUpload, binding.fullMenuUploadContainer) }
+        binding.iconLog.setOnClickListener { selectMenuItem(ActivityLogFragment(), binding.iconLog, binding.fullMenuLogContainer) }
         binding.iconExit.setOnClickListener { showLogoutConfirmationDialog() }
 
         // Listeners สำหรับ Full Menu
@@ -84,6 +122,7 @@ class PanelActivity : AppCompatActivity() {
         binding.fullMenuClockContainer.setOnClickListener { selectMenuItem(RenewUserFragment(), binding.iconClock, binding.fullMenuClockContainer) }
         binding.fullMenuGroupContainer.setOnClickListener { selectMenuItem(SearchUserFragment(), binding.iconGroup, binding.fullMenuGroupContainer) }
         binding.fullMenuUploadContainer.setOnClickListener { selectMenuItem(ExportUserFragment(), binding.iconUpload, binding.fullMenuUploadContainer) }
+        binding.fullMenuLogContainer.setOnClickListener { selectMenuItem(ActivityLogFragment(), binding.iconLog, binding.fullMenuLogContainer) }
         binding.fullMenuExitContainer.setOnClickListener { showLogoutConfirmationDialog() }
     }
 
