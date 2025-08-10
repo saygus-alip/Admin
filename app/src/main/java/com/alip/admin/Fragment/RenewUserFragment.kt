@@ -20,6 +20,7 @@ import java.util.Locale
 import com.alip.admin.Data.ActivityLog
 import com.google.firebase.Timestamp
 import android.util.Log
+import com.alip.admin.R
 
 class RenewUserFragment : Fragment() {
 
@@ -54,18 +55,18 @@ class RenewUserFragment : Fragment() {
 
         // 1. ตรวจสอบข้อมูลที่กรอกเข้ามา
         if (targetUsername.isEmpty() || expiredDaysStr.isEmpty()) {
-            Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Please enter username and renew days!", Toast.LENGTH_SHORT).show()
             return
         }
 
         val expiredDays = expiredDaysStr.toIntOrNull()
         if (expiredDays == null || expiredDays < 10 || expiredDays > 100 || expiredDays % 10 != 0) {
-            binding.textInputLayoutRenew.error = "Renewal days must be 10, 20, ..., 100"
+            binding.textInputLayoutRenew.error = "Renewal days must be 10, 20, ..., 100!"
             return
         }
 
         if (adminEmail == null) {
-            Toast.makeText(requireContext(), "Admin user not found. Please log in again.", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "Admin user not found! Please log in again!", Toast.LENGTH_LONG).show()
             return
         }
 
@@ -118,11 +119,11 @@ class RenewUserFragment : Fragment() {
                         }
                     } else {
                         loadingSpinner.dismiss()
-                        Toast.makeText(requireContext(), "You can only renew users you created.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "You can only renew users you created!", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     loadingSpinner.dismiss()
-                    Toast.makeText(requireContext(), "User '$targetUsername' not found.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "User '$targetUsername' not found!", Toast.LENGTH_SHORT).show()
                 }
             }
             .addOnFailureListener { e ->
@@ -163,17 +164,18 @@ class RenewUserFragment : Fragment() {
         db.collection("ActivityLog")
             .add(log)
             .addOnSuccessListener {
-                Log.d("RenewUserFragment", "Activity Log added successfully.")
+                Log.d("RenewUserFragment", "Activity Log added successfully!")
             }
             .addOnFailureListener { e ->
-                Log.w("RenewUserFragment", "Error adding activity log", e)
+                Log.w("RenewUserFragment", "Error adding activity log!", e)
             }
     }
 
     private fun showCreditAlertDialog() {
         AlertDialog.Builder(requireContext())
+            .setIcon(R.drawable.ic_eazy)
             .setTitle("Not Enough Credit")
-            .setMessage("You do not have enough credit to renew this user.")
+            .setMessage("You do not have enough credit to renew this user")
             .setPositiveButton("OK") { _, _ -> }
             .show()
     }

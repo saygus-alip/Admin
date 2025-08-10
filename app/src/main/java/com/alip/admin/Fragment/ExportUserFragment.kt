@@ -64,7 +64,7 @@ class ExportUserFragment : Fragment() {
         val adminEmail = loginManager.getLoggedInEmail()
 
         if (adminEmail == null) {
-            Toast.makeText(requireContext(), "Admin user not found. Please log in again.", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "Admin user not found! Please log in again!", Toast.LENGTH_LONG).show()
             return
         }
 
@@ -76,7 +76,7 @@ class ExportUserFragment : Fragment() {
             .addOnSuccessListener { querySnapshot ->
                 loadingSpinner.dismiss()
                 if (querySnapshot.isEmpty) {
-                    Toast.makeText(requireContext(), "No users found to export.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "No users found to export!", Toast.LENGTH_SHORT).show()
                     return@addOnSuccessListener
                 }
 
@@ -119,7 +119,7 @@ class ExportUserFragment : Fragment() {
 
     private fun openExportedFile() {
         if (!exportedFile.exists() || exportedFile.length() == 0L) {
-            Toast.makeText(requireContext(), "Please export data first.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Please export data first!", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -130,13 +130,13 @@ class ExportUserFragment : Fragment() {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             startActivity(intent)
         } catch (e: Exception) {
-            Toast.makeText(requireContext(), "No app found to open the file.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "No app found to open the file!", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun sendExportedFile() {
         if (!exportedFile.exists() || exportedFile.length() == 0L) {
-            Toast.makeText(requireContext(), "Please export data first.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Please export data first!", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -148,9 +148,9 @@ class ExportUserFragment : Fragment() {
         }
 
         try {
-            startActivity(Intent.createChooser(intent, "Send file using"))
+            startActivity(Intent.createChooser(intent, "Send file using!"))
         } catch (e: Exception) {
-            Toast.makeText(requireContext(), "No app found to send the file.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "No app found to send the file!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -168,10 +168,10 @@ class ExportUserFragment : Fragment() {
         db.collection("ActivityLog")
             .add(log)
             .addOnSuccessListener {
-                Log.d("ExportUserFragment", "Activity Log added successfully.")
+                Log.d("ExportUserFragment", "Activity Log added successfully!")
             }
             .addOnFailureListener { e ->
-                Log.w("ExportUserFragment", "Error adding activity log", e)
+                Log.w("ExportUserFragment", "Error adding activity log!", e)
             }
     }
 

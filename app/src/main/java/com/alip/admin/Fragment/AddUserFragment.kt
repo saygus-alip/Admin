@@ -53,18 +53,18 @@ class AddUserFragment : Fragment() {
         val adminUsername = loginManager.getLoggedInUsername()
 
         if (username.isEmpty() || password.isEmpty() || password.length < 6 || expiredDaysStr.isEmpty()) {
-            Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Please enter username and password!", Toast.LENGTH_SHORT).show()
             return
         }
 
         val expiredDays = expiredDaysStr.toIntOrNull()
         if (expiredDays == null || expiredDays < 10 || expiredDays > 100 || expiredDays % 10 != 0) {
-            binding.textInputLayoutExpired.error = "Expired days must be 10, 20, ..., 100"
+            binding.textInputLayoutExpired.error = "Expired days must be 10, 20, ..., 100 !"
             return
         }
 
         if (adminEmail == null) {
-            Toast.makeText(requireContext(), "Admin user not found. Please log in again.", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "Admin user not found Please log in again!", Toast.LENGTH_LONG).show()
             return
         }
 
@@ -100,7 +100,7 @@ class AddUserFragment : Fragment() {
         }.addOnSuccessListener {
             loadingSpinner.dismiss()
             loginManager.updateCredit(newCredit)
-            Toast.makeText(requireContext(), "User $username registered successfully! Your credit has been deducted.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "User $username registered successfully! Your credit has been deducted!", Toast.LENGTH_SHORT).show()
 
             // แก้ไข: บันทึก Activity Log ที่สมบูรณ์ยิ่งขึ้น
             val action = "Add User"
@@ -129,17 +129,18 @@ class AddUserFragment : Fragment() {
         db.collection("ActivityLog")
             .add(log)
             .addOnSuccessListener {
-                Log.d("AddUserFragment", "Activity Log added successfully.")
+                Log.d("AddUserFragment", "Activity Log added successfully!")
             }
             .addOnFailureListener { e ->
-                Log.w("AddUserFragment", "Error adding activity log", e)
+                Log.w("AddUserFragment", "Error adding activity log!", e)
             }
     }
 
     private fun showCreditAlertDialog() {
         AlertDialog.Builder(requireContext())
+            .setIcon(R.drawable.ic_eazy)
             .setTitle("Not Enough Credit")
-            .setMessage("You do not have enough credit to create this user.")
+            .setMessage("You do not have enough credit to create this user")
             .setPositiveButton("OK") { _, _ -> }
             .show()
     }

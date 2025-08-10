@@ -72,12 +72,12 @@ class SearchUserFragment : Fragment() {
         val adminEmail = loginManager.getLoggedInEmail()
 
         if (targetUsername.isEmpty()) {
-            Toast.makeText(requireContext(), "Please enter a username to search.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Please enter a username to search!", Toast.LENGTH_SHORT).show()
             return
         }
 
         if (adminEmail == null) {
-            Toast.makeText(requireContext(), "Admin user not found. Please log in again.", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "Admin user not found! Please log in again!", Toast.LENGTH_LONG).show()
             return
         }
 
@@ -98,10 +98,10 @@ class SearchUserFragment : Fragment() {
                         binding.userResultCardView.visibility = View.VISIBLE
                         Toast.makeText(requireContext(), "User '$targetUsername' found.", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(requireContext(), "You can only manage users you created.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "You can only manage users you created!", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Toast.makeText(requireContext(), "User '$targetUsername' not found.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "User '$targetUsername' not found!", Toast.LENGTH_SHORT).show()
                 }
             }
             .addOnFailureListener { e ->
@@ -134,12 +134,12 @@ class SearchUserFragment : Fragment() {
         val creditCost = 0.25f
 
         if (newPassword != confirmPassword || newPassword.length < 6) {
-            Toast.makeText(requireContext(), "New passwords do not match or are too short.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "New passwords do not match or are too short!", Toast.LENGTH_SHORT).show()
             return
         }
 
         if (adminEmail == null || loginManager.getLoggedInCredit() < creditCost) {
-            Toast.makeText(requireContext(), "Not enough credit or admin not found.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Not enough credit or admin not found!", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -174,7 +174,7 @@ class SearchUserFragment : Fragment() {
                     }
                 } else {
                     loadingSpinner.dismiss()
-                    Toast.makeText(requireContext(), "Incorrect admin password.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Incorrect admin password!", Toast.LENGTH_SHORT).show()
                 }
             }
     }
@@ -201,13 +201,13 @@ class SearchUserFragment : Fragment() {
         val expiredDays = expiredDaysStr.toIntOrNull()
 
         if (expiredDays == null || expiredDays < 10 || expiredDays > 100 || expiredDays % 10 != 0) {
-            Toast.makeText(requireContext(), "Renewal days must be 10, 20, ..., 100.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Renewal days must be 10, 20, ..., 100!", Toast.LENGTH_SHORT).show()
             return
         }
 
         val creditCost = expiredDays / 10f
         if (adminEmail == null || loginManager.getLoggedInCredit() < creditCost) {
-            Toast.makeText(requireContext(), "Not enough credit or admin not found.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Not enough credit or admin not found!", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -263,7 +263,7 @@ class SearchUserFragment : Fragment() {
     private fun exportUserDataToFile() {
         val adminEmail = loginManager.getLoggedInEmail()
         if (adminEmail == null) {
-            Toast.makeText(requireContext(), "Admin user not found. Please log in again.", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "Admin user not found Please log in again!", Toast.LENGTH_LONG).show()
             return
         }
 
@@ -275,7 +275,7 @@ class SearchUserFragment : Fragment() {
             .addOnSuccessListener { querySnapshot ->
                 loadingSpinner.dismiss()
                 if (querySnapshot.isEmpty) {
-                    Toast.makeText(requireContext(), "No users found to export.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "No users found to export!", Toast.LENGTH_SHORT).show()
                     return@addOnSuccessListener
                 }
 
@@ -316,6 +316,7 @@ class SearchUserFragment : Fragment() {
 
     private fun showExportedFileOptions() {
         val builder = AlertDialog.Builder(requireContext())
+        builder.setIcon(R.drawable.ic_eazy)
         builder.setTitle("Exported File Actions")
         builder.setMessage("Data has been exported to 'exported_users.csv'.")
         builder.setPositiveButton("Open") { _, _ -> openExportedFile() }
@@ -332,7 +333,7 @@ class SearchUserFragment : Fragment() {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             startActivity(intent)
         } catch (e: Exception) {
-            Toast.makeText(requireContext(), "No app found to open the file. Please ensure you have a spreadsheet app installed.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "No app found to open the file Please ensure you have a spreadsheet app installed!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -346,7 +347,7 @@ class SearchUserFragment : Fragment() {
         try {
             startActivity(Intent.createChooser(intent, "Send file using"))
         } catch (e: Exception) {
-            Toast.makeText(requireContext(), "No app found to send the file.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "No app found to send the file!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -364,10 +365,10 @@ class SearchUserFragment : Fragment() {
         db.collection("ActivityLog")
             .add(log)
             .addOnSuccessListener {
-                Log.d("SearchUserFragment", "Activity Log added successfully.")
+                Log.d("SearchUserFragment", "Activity Log added successfully!")
             }
             .addOnFailureListener { e ->
-                Log.w("SearchUserFragment", "Error adding activity log", e)
+                Log.w("SearchUserFragment", "Error adding activity log!", e)
             }
     }
 

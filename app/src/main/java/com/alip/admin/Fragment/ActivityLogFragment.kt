@@ -73,7 +73,7 @@ class ActivityLogFragment : Fragment() {
                     Toast.makeText(context, "Error fetching logs.", Toast.LENGTH_SHORT).show()
                 }
         } else {
-            Toast.makeText(context, "No user logged in.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "No user logged in!", Toast.LENGTH_SHORT).show()
         }
     }
 }

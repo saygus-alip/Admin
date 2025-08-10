@@ -17,6 +17,7 @@ import com.alip.admin.Data.ActivityLog
 import com.google.firebase.Timestamp
 import java.util.Date
 import android.util.Log
+import com.alip.admin.R
 
 
 class ChangePasswordFragment : Fragment() {
@@ -56,22 +57,22 @@ class ChangePasswordFragment : Fragment() {
         // Removed creditCost since there is no credit deduction for this action.
 
         if (targetUsername.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
-            Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Please enter username and password!", Toast.LENGTH_SHORT).show()
             return
         }
 
         if (newPassword != confirmPassword) {
-            Toast.makeText(requireContext(), "New passwords do not match", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "New passwords do not match!", Toast.LENGTH_SHORT).show()
             return
         }
 
         if (newPassword.length < 6) {
-            Toast.makeText(requireContext(), "New password must be at least 6 characters", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "New password must be at least 6 characters!", Toast.LENGTH_SHORT).show()
             return
         }
 
         if (adminEmail == null) {
-            Toast.makeText(requireContext(), "Admin user not found. Please log in again.", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "Admin user not found. Please log in again!", Toast.LENGTH_LONG).show()
             return
         }
 
@@ -117,20 +118,20 @@ class ChangePasswordFragment : Fragment() {
                                         }
                                     } else {
                                         loadingSpinner.dismiss()
-                                        Toast.makeText(requireContext(), "You can only change passwords for users you created.", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(requireContext(), "You can only change passwords for users you created!", Toast.LENGTH_SHORT).show()
                                     }
                                 } else {
                                     loadingSpinner.dismiss()
-                                    Toast.makeText(requireContext(), "User not found.", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(requireContext(), "User not found!", Toast.LENGTH_SHORT).show()
                                 }
                             }
                     } else {
                         loadingSpinner.dismiss()
-                        Toast.makeText(requireContext(), "Incorrect old password for admin.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Incorrect password for admin!", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     loadingSpinner.dismiss()
-                    Toast.makeText(requireContext(), "Admin document not found.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Admin document not found!", Toast.LENGTH_SHORT).show()
                 }
             }
             .addOnFailureListener { e ->
@@ -153,17 +154,18 @@ class ChangePasswordFragment : Fragment() {
         db.collection("ActivityLog")
             .add(log)
             .addOnSuccessListener {
-                Log.d("ChangePasswordFragment", "Activity Log added successfully.")
+                Log.d("ChangePasswordFragment", "Activity Log added successfully!")
             }
             .addOnFailureListener { e ->
-                Log.w("ChangePasswordFragment", "Error adding activity log", e)
+                Log.w("ChangePasswordFragment", "Error adding activity log!", e)
             }
     }
 
     private fun showCreditAlertDialog() {
         AlertDialog.Builder(requireContext())
+            .setIcon(R.drawable.ic_eazy)
             .setTitle("Not Enough Credit")
-            .setMessage("You do not have enough credit to change your password.")
+            .setMessage("You do not have enough credit to change your password")
             .setPositiveButton("OK") { _, _ -> }
             .show()
     }

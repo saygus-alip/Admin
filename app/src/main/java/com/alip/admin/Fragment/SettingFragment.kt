@@ -16,6 +16,7 @@ import com.google.firebase.Timestamp
 import java.util.Date
 import com.alip.admin.Data.ActivityLog
 import android.util.Log
+import com.alip.admin.R
 
 class SettingFragment : Fragment() {
 
@@ -53,7 +54,7 @@ class SettingFragment : Fragment() {
         val adminEmail = loginManager.getLoggedInEmail()
 
         if (targetUsername.isEmpty() || adminEmail == null) {
-            Toast.makeText(requireContext(), "Error: Missing user data.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Please enter your username!", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -71,23 +72,24 @@ class SettingFragment : Fragment() {
                     } else {
                         Toast.makeText(
                             requireContext(),
-                            "You can only delete users you created.",
+                            "You can only delete users you created!",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
                 } else {
-                    Toast.makeText(requireContext(), "User not found.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "User not found!", Toast.LENGTH_SHORT).show()
                 }
             }
             .addOnFailureListener {
                 loadingSpinner.dismiss()
-                Toast.makeText(requireContext(), "Failed to access database.", Toast.LENGTH_SHORT)
+                Toast.makeText(requireContext(), "Failed to access database!", Toast.LENGTH_SHORT)
                     .show()
             }
     }
 
     private fun showRemovalConfirmationDialog(username: String, adminEmail: String) {
         AlertDialog.Builder(requireContext())
+            .setIcon(R.drawable.ic_eazy)
             .setTitle("Confirm Removal")
             .setMessage("Are you sure you want to remove user '$username'?")
             .setPositiveButton("Remove") { dialog, _ ->
@@ -108,7 +110,7 @@ class SettingFragment : Fragment() {
                 loadingSpinner.dismiss()
                 Toast.makeText(
                     requireContext(),
-                    "User '$username' has been removed.",
+                    "User '$username' has been removed!",
                     Toast.LENGTH_SHORT
                 ).show()
 
@@ -121,7 +123,7 @@ class SettingFragment : Fragment() {
             }
             .addOnFailureListener {
                 loadingSpinner.dismiss()
-                Toast.makeText(requireContext(), "Failed to remove user.", Toast.LENGTH_SHORT)
+                Toast.makeText(requireContext(), "Failed to remove user!", Toast.LENGTH_SHORT)
                     .show()
             }
     }
@@ -132,7 +134,7 @@ class SettingFragment : Fragment() {
         val creditCost = 0.25f // แก้ไข: เปลี่ยนเป็น Float ให้ตรงกับ cost ใน Log
 
         if (targetUsername.isEmpty() || adminEmail == null) {
-            Toast.makeText(requireContext(), "Error: Missing user data.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Please enter your username!", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -156,7 +158,7 @@ class SettingFragment : Fragment() {
                                     if (currentDeviceId == "none") {
                                         Toast.makeText(
                                             requireContext(),
-                                            "User's device is already reset.",
+                                            "User's device is already reset!",
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     } else if (createdByEmail == adminEmail) {
@@ -168,7 +170,7 @@ class SettingFragment : Fragment() {
                                     } else {
                                         Toast.makeText(
                                             requireContext(),
-                                            "You can only reset users you created.",
+                                            "You can only reset users you created!",
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
@@ -176,7 +178,7 @@ class SettingFragment : Fragment() {
                                 } else {
                                     Toast.makeText(
                                         requireContext(),
-                                        "User not found.",
+                                        "User not found!",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
@@ -185,14 +187,14 @@ class SettingFragment : Fragment() {
                 } else {
                     Toast.makeText(
                         requireContext(),
-                        "Admin document not found.",
+                        "Admin document not found!",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
             }
             .addOnFailureListener {
                 loadingSpinner.dismiss()
-                Toast.makeText(requireContext(), "Failed to access database.", Toast.LENGTH_SHORT)
+                Toast.makeText(requireContext(), "Failed to access database!", Toast.LENGTH_SHORT)
                     .show()
             }
     }
@@ -218,7 +220,7 @@ class SettingFragment : Fragment() {
             loginManager.updateCredit(newCredit.toFloat())
             Toast.makeText(
                 requireContext(),
-                "User '$targetUsername' device has been reset. Your credit has been deducted.",
+                "User '$targetUsername' device has been reset. Your credit has been deducted!",
                 Toast.LENGTH_SHORT
             ).show()
 
@@ -231,7 +233,7 @@ class SettingFragment : Fragment() {
             loadingSpinner.dismiss()
             Toast.makeText(
                 requireContext(),
-                "Failed to reset device and deduct credit.",
+                "Failed to reset device and deduct credit!",
                 Toast.LENGTH_LONG
             ).show()
         }
@@ -251,17 +253,18 @@ class SettingFragment : Fragment() {
         db.collection("ActivityLog")
             .add(log)
             .addOnSuccessListener {
-                Log.d("SettingFragment", "Activity Log added successfully.")
+                Log.d("SettingFragment", "Activity Log added successfully!")
             }
             .addOnFailureListener { e ->
-                Log.w("SettingFragment", "Error adding activity log", e)
+                Log.w("SettingFragment", "Error adding activity log!", e)
             }
     }
 
     private fun showCreditAlertDialog() {
         AlertDialog.Builder(requireContext())
+            .setIcon(R.drawable.ic_eazy)
             .setTitle("Not Enough Credit")
-            .setMessage("You do not have enough credit to reset this user's device.")
+            .setMessage("You do not have enough credit to reset this user's device")
             .setPositiveButton("OK") { _, _ -> }
             .show()
     }
