@@ -9,7 +9,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Renewal Days (10, 20, ..., 100)">
+        android:hint="Renewal Days">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/renewDaysEditText"
             android:layout_width="match_parent"

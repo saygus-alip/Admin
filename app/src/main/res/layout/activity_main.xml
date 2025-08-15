@@ -24,10 +24,10 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="AlipTeam Admin v1.0"
+            android:text="PSTeam Admin v1.0"
             android:textColor="@color/fill_blue_bg"
             android:paddingTop="28dp"
-            android:textSize="22sp"
+            android:textSize="28sp"
             android:gravity="center"
             android:textStyle="bold"
             android:layout_marginBottom="4dp" />
