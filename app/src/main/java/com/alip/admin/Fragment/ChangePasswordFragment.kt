@@ -18,7 +18,8 @@ import com.google.firebase.Timestamp
 import java.util.Date
 import android.util.Log
 import com.alip.admin.R
-
+import android.graphics.Typeface
+import android.widget.TextView
 
 class ChangePasswordFragment : Fragment() {
 
@@ -54,29 +55,53 @@ class ChangePasswordFragment : Fragment() {
         val confirmPassword = binding.confirmPasswordEditText.text.toString().trim()
         val adminEmail = loginManager.getLoggedInEmail()
 
-        // Removed creditCost since there is no credit deduction for this action.
-
         if (targetUsername.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
-            Toast.makeText(requireContext(), "Please enter username and password!", Toast.LENGTH_SHORT).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Input Required")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("Please enter username and password!")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
             return
         }
 
         if (newPassword != confirmPassword) {
-            Toast.makeText(requireContext(), "New passwords do not match!", Toast.LENGTH_SHORT).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Passwords Mismatch")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("New passwords do not match!")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
             return
         }
 
         if (newPassword.length < 6) {
-            Toast.makeText(requireContext(), "New password must be at least 6 characters!", Toast.LENGTH_SHORT).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Password Too Short")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("New password must be at least 6 characters!")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
             return
         }
 
         if (adminEmail == null) {
-            Toast.makeText(requireContext(), "Admin user not found. Please log in again!", Toast.LENGTH_LONG).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Authentication Error")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("Admin user not found. Please log in again!")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
             return
         }
-
-        // Removed credit check.
 
         loadingSpinner.show(parentFragmentManager, "loading_spinner")
 
@@ -93,54 +118,99 @@ class ChangePasswordFragment : Fragment() {
 
                                     if (createdByEmail == adminEmail) {
                                         val newHashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt())
-                                        // Removed newCredit calculation.
 
-                                        // Update only the user's password using a batch write.
                                         val userRef = db.collection("Users").document(targetUsername)
                                         db.runBatch { batch ->
                                             batch.update(userRef, "hashedPassword", newHashedPassword)
                                         }.addOnSuccessListener {
                                             loadingSpinner.dismiss()
-                                            // No credit update in LoginManager.
-                                            Toast.makeText(requireContext(), "Password for '$targetUsername' changed successfully!", Toast.LENGTH_SHORT).show()
+                                            val dialog = AlertDialog.Builder(requireContext())
+                                                .setTitle("Success")
+                                                .setIcon(R.drawable.ic_eazy)
+                                                .setMessage("Password for $targetUsername changed successfully!")
+                                                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                                                .setCancelable(false)
+                                                .show()
+                                            applyCustomFontToDialog(dialog)
+
                                             binding.oldPasswordEditText.text?.clear()
 
-                                            // Added Log for password change with custom details.
                                             val adminUsername = loginManager.getLoggedInUsername()
                                             val action = "Change Password"
                                             val details = "$adminUsername changed password for $targetUsername"
-                                            val cost = 0.0f // Set cost to 0.0 since there's no deduction.
+                                            val cost = 0.0f
                                             saveActivityLog(action, details, adminEmail, cost)
 
                                         }.addOnFailureListener { e ->
                                             loadingSpinner.dismiss()
-                                            Toast.makeText(requireContext(), "Error updating password: ${e.message}", Toast.LENGTH_LONG).show()
+                                            val dialog = AlertDialog.Builder(requireContext())
+                                                .setTitle("Update Error")
+                                                .setIcon(R.drawable.ic_eazy)
+                                                .setMessage("Error updating password: ${e.message}")
+                                                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                                                .setCancelable(false)
+                                                .show()
+                                            applyCustomFontToDialog(dialog)
                                         }
                                     } else {
                                         loadingSpinner.dismiss()
-                                        Toast.makeText(requireContext(), "You can only change passwords for users you created!", Toast.LENGTH_SHORT).show()
+                                        val dialog = AlertDialog.Builder(requireContext())
+                                            .setTitle("Unauthorized Action")
+                                            .setIcon(R.drawable.ic_eazy)
+                                            .setMessage("You can only change passwords for users you created!")
+                                            .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                                            .setCancelable(false)
+                                            .show()
+                                        applyCustomFontToDialog(dialog)
                                     }
                                 } else {
                                     loadingSpinner.dismiss()
-                                    Toast.makeText(requireContext(), "User not found!", Toast.LENGTH_SHORT).show()
+                                    val dialog = AlertDialog.Builder(requireContext())
+                                        .setTitle("User Not Found")
+                                        .setIcon(R.drawable.ic_eazy)
+                                        .setMessage("User not found!")
+                                        .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                                        .setCancelable(false)
+                                        .show()
+                                    applyCustomFontToDialog(dialog)
                                 }
                             }
                     } else {
                         loadingSpinner.dismiss()
-                        Toast.makeText(requireContext(), "Incorrect password for admin!", Toast.LENGTH_SHORT).show()
+                        val dialog = AlertDialog.Builder(requireContext())
+                            .setTitle("Authentication Failed")
+                            .setIcon(R.drawable.ic_eazy)
+                            .setMessage("Incorrect password for admin!")
+                            .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                            .setCancelable(false)
+                            .show()
+                        applyCustomFontToDialog(dialog)
                     }
                 } else {
                     loadingSpinner.dismiss()
-                    Toast.makeText(requireContext(), "Admin document not found!", Toast.LENGTH_SHORT).show()
+                    val dialog = AlertDialog.Builder(requireContext())
+                        .setTitle("Authentication Error")
+                        .setIcon(R.drawable.ic_eazy)
+                        .setMessage("Admin document not found!")
+                        .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                        .setCancelable(false)
+                        .show()
+                    applyCustomFontToDialog(dialog)
                 }
             }
             .addOnFailureListener { e ->
                 loadingSpinner.dismiss()
-                Toast.makeText(requireContext(), "Failed to access database: ${e.message}", Toast.LENGTH_LONG).show()
+                val dialog = AlertDialog.Builder(requireContext())
+                    .setTitle("Database Error")
+                    .setIcon(R.drawable.ic_eazy)
+                    .setMessage("Failed to access database: ${e.message}")
+                    .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                    .setCancelable(false)
+                    .show()
+                applyCustomFontToDialog(dialog)
             }
     }
 
-    // Function to save the log to Firestore.
     private fun saveActivityLog(action: String, details: String, adminEmail: String, cost: Float) {
         val log = ActivityLog(
             action = action,
@@ -161,13 +231,24 @@ class ChangePasswordFragment : Fragment() {
             }
     }
 
-    private fun showCreditAlertDialog() {
-        AlertDialog.Builder(requireContext())
-            .setIcon(R.drawable.ic_eazy)
-            .setTitle("Not Enough Credit")
-            .setMessage("You do not have enough credit to change your password")
-            .setPositiveButton("OK") { _, _ -> }
-            .show()
+    private fun applyCustomFontToDialog(dialog: AlertDialog) {
+        try {
+            // Try to use the font from the assets folder.
+            val typeface = Typeface.createFromAsset(requireContext().assets, "regular.ttf")
+            dialog.findViewById<TextView>(android.R.id.message)?.typeface = typeface
+            // Try to use the font for the title as well.
+            dialog.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.typeface = typeface
+        } catch (e: Exception) {
+            // If not found in assets, try from the res/font folder.
+            try {
+                val typeface = resources.getFont(R.font.regular)
+                dialog.findViewById<TextView>(android.R.id.message)?.typeface = typeface
+                dialog.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.typeface = typeface
+            } catch (e2: Exception) {
+                // Log a specific error if the font is not found in both locations.
+                Log.e("ChangePasswordFragment", "Custom font not found or failed to apply: ${e.message} and ${e2.message}")
+            }
+        }
     }
 
     override fun onDestroyView() {

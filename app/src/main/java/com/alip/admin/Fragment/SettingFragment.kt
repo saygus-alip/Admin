@@ -17,6 +17,8 @@ import java.util.Date
 import com.alip.admin.Data.ActivityLog
 import android.util.Log
 import com.alip.admin.R
+import android.graphics.Typeface
+import android.widget.TextView
 
 class SettingFragment : Fragment() {
 
@@ -88,10 +90,10 @@ class SettingFragment : Fragment() {
     }
 
     private fun showRemovalConfirmationDialog(username: String, adminEmail: String) {
-        AlertDialog.Builder(requireContext())
+        val dialog = AlertDialog.Builder(requireContext())
             .setIcon(R.drawable.ic_eazy)
             .setTitle("Confirm Removal")
-            .setMessage("Are you sure you want to remove user '$username'?")
+            .setMessage("Are you sure you want to remove user $username?")
             .setPositiveButton("Remove") { dialog, _ ->
                 removeUser(username, adminEmail)
                 dialog.dismiss()
@@ -99,7 +101,10 @@ class SettingFragment : Fragment() {
             .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
             }
+            .setCancelable(false)
             .show()
+
+        applyCustomFontToDialog(dialog)
     }
 
     private fun removeUser(username: String, adminEmail: String) {
@@ -110,7 +115,7 @@ class SettingFragment : Fragment() {
                 loadingSpinner.dismiss()
                 Toast.makeText(
                     requireContext(),
-                    "User '$username' has been removed!",
+                    "User $username has been removed!",
                     Toast.LENGTH_SHORT
                 ).show()
 
@@ -220,7 +225,7 @@ class SettingFragment : Fragment() {
             loginManager.updateCredit(newCredit.toFloat())
             Toast.makeText(
                 requireContext(),
-                "User '$targetUsername' device has been reset. Your credit has been deducted!",
+                "$targetUsername device has been reset. Your credit has been deducted!",
                 Toast.LENGTH_SHORT
             ).show()
 
@@ -261,12 +266,39 @@ class SettingFragment : Fragment() {
     }
 
     private fun showCreditAlertDialog() {
-        AlertDialog.Builder(requireContext())
+        val dialog = AlertDialog.Builder(requireContext())
             .setIcon(R.drawable.ic_eazy)
             .setTitle("Not Enough Credit")
             .setMessage("You do not have enough credit to reset this user's device")
-            .setPositiveButton("OK") { _, _ -> }
+            .setPositiveButton("OK") { dialog, _ ->
+                Toast.makeText(
+                    requireContext(),
+                    "You do not have enough credit to reset this user's device",
+                    Toast.LENGTH_SHORT
+                ).show()
+                dialog.dismiss()
+            }
+            .setCancelable(false)
             .show()
+
+        applyCustomFontToDialog(dialog)
+    }
+
+    // ฟังก์ชันช่วยในการเปลี่ยนฟอนต์ของ Dialog
+    private fun applyCustomFontToDialog(dialog: AlertDialog) {
+        try {
+            // ลองใช้ฟอนต์จากโฟลเดอร์ assets
+            val typeface = Typeface.createFromAsset(requireContext().assets, "regular.ttf")
+            dialog.findViewById<TextView>(android.R.id.message)?.typeface = typeface
+        } catch (e: Exception) {
+            // หากไม่พบใน assets ให้ลองจากโฟลเดอร์ res/font
+            try {
+                val typeface = resources.getFont(R.font.regular)
+                dialog.findViewById<TextView>(android.R.id.message)?.typeface = typeface
+            } catch (e2: Exception) {
+                Log.e("SettingFragment", "Custom font not found or failed to apply: ${e.message} and ${e2.message}")
+            }
+        }
     }
 
     override fun onDestroyView() {

@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -27,6 +26,8 @@ import java.util.Locale
 import com.alip.admin.Data.ActivityLog
 import com.google.firebase.Timestamp
 import android.util.Log
+import android.graphics.Typeface
+import android.widget.TextView
 
 class SearchUserFragment : Fragment() {
 
@@ -72,12 +73,26 @@ class SearchUserFragment : Fragment() {
         val adminEmail = loginManager.getLoggedInEmail()
 
         if (targetUsername.isEmpty()) {
-            Toast.makeText(requireContext(), "Please enter a username to search!", Toast.LENGTH_SHORT).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Input Required")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("Please enter a username to search!")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
             return
         }
 
         if (adminEmail == null) {
-            Toast.makeText(requireContext(), "Admin user not found! Please log in again!", Toast.LENGTH_LONG).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Authentication Error")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("Admin user not found! Please log in again!")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
             return
         }
 
@@ -91,22 +106,50 @@ class SearchUserFragment : Fragment() {
                     val createdByEmail = userDocument.getString("CreatedBy")
 
                     if (createdByEmail == adminEmail) {
-                        // User นี้ถูกสร้างโดย Admin คนนี้
+                        // This user was created by this admin
                         foundUsername = targetUsername
                         binding.usernameTextView.text = "Username: $targetUsername"
                         binding.expiredDateTextView.text = "Expired: ${userDocument.getString("Expired") ?: "N/A"}"
                         binding.userResultCardView.visibility = View.VISIBLE
-                        Toast.makeText(requireContext(), "User '$targetUsername' found.", Toast.LENGTH_SHORT).show()
+                        val dialog = AlertDialog.Builder(requireContext())
+                            .setTitle("Success")
+                            .setIcon(R.drawable.ic_eazy)
+                            .setMessage("User $targetUsername found!")
+                            .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                            .setCancelable(false)
+                            .show()
+                        applyCustomFontToDialog(dialog)
                     } else {
-                        Toast.makeText(requireContext(), "You can only manage users you created!", Toast.LENGTH_SHORT).show()
+                        val dialog = AlertDialog.Builder(requireContext())
+                            .setTitle("Unauthorized Action")
+                            .setIcon(R.drawable.ic_eazy)
+                            .setMessage("You can only manage users you created!")
+                            .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                            .setCancelable(false)
+                            .show()
+                        applyCustomFontToDialog(dialog)
                     }
                 } else {
-                    Toast.makeText(requireContext(), "User '$targetUsername' not found!", Toast.LENGTH_SHORT).show()
+                    val dialog = AlertDialog.Builder(requireContext())
+                        .setTitle("User Not Found")
+                        .setIcon(R.drawable.ic_eazy)
+                        .setMessage("User $targetUsername not found!")
+                        .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                        .setCancelable(false)
+                        .show()
+                    applyCustomFontToDialog(dialog)
                 }
             }
             .addOnFailureListener { e ->
                 loadingSpinner.dismiss()
-                Toast.makeText(requireContext(), "Failed to access database: ${e.message}", Toast.LENGTH_LONG).show()
+                val dialog = AlertDialog.Builder(requireContext())
+                    .setTitle("Database Error")
+                    .setIcon(R.drawable.ic_eazy)
+                    .setMessage("Failed to access database: ${e.message}")
+                    .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                    .setCancelable(false)
+                    .show()
+                applyCustomFontToDialog(dialog)
             }
     }
 
@@ -120,13 +163,16 @@ class SearchUserFragment : Fragment() {
         val newPassword = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.newPasswordEditText)
         val confirmPassword = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.confirmPasswordEditText)
 
-        builder.setView(dialogView)
+        val dialog = builder.setView(dialogView)
             .setTitle("Change Password for $targetUsername")
+            .setIcon(R.drawable.ic_eazy)
             .setPositiveButton("Change") { _, _ ->
                 handleChangePassword(targetUsername, oldAdminPassword.text.toString(), newPassword.text.toString(), confirmPassword.text.toString())
             }
-            .setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
+            .setNegativeButton("Cancel") { d, _ -> d.cancel() }
+            .setCancelable(false)
             .show()
+        applyCustomFontToDialog(dialog)
     }
 
     private fun handleChangePassword(targetUsername: String, oldAdminPassword: String, newPassword: String, confirmPassword: String) {
@@ -134,12 +180,26 @@ class SearchUserFragment : Fragment() {
         val creditCost = 0.25f
 
         if (newPassword != confirmPassword || newPassword.length < 6) {
-            Toast.makeText(requireContext(), "New passwords do not match or are too short!", Toast.LENGTH_SHORT).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Invalid Password")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("New passwords do not match or are too short (must be at least 6 characters)!")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
             return
         }
 
         if (adminEmail == null || loginManager.getLoggedInCredit() < creditCost) {
-            Toast.makeText(requireContext(), "Not enough credit or admin not found!", Toast.LENGTH_SHORT).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Error")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("Not enough credit or admin not found!")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
             return
         }
 
@@ -160,9 +220,16 @@ class SearchUserFragment : Fragment() {
                     }.addOnSuccessListener {
                         loadingSpinner.dismiss()
                         loginManager.updateCredit(newCredit)
-                        Toast.makeText(requireContext(), "Password for '$targetUsername' changed successfully!", Toast.LENGTH_SHORT).show()
+                        val dialog = AlertDialog.Builder(requireContext())
+                            .setTitle("Success")
+                            .setIcon(R.drawable.ic_eazy)
+                            .setMessage("Password for $targetUsername changed successfully!")
+                            .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                            .setCancelable(false)
+                            .show()
+                        applyCustomFontToDialog(dialog)
 
-                        // เพิ่ม Log สำหรับการเปลี่ยนรหัสผ่าน
+                        // Add Log for password change
                         val action = "Change Password"
                         val adminUsername = loginManager.getLoggedInUsername()
                         val details = "$adminUsername changed password for $targetUsername from the search screen"
@@ -170,11 +237,25 @@ class SearchUserFragment : Fragment() {
 
                     }.addOnFailureListener { e ->
                         loadingSpinner.dismiss()
-                        Toast.makeText(requireContext(), "Error updating password: ${e.message}", Toast.LENGTH_LONG).show()
+                        val dialog = AlertDialog.Builder(requireContext())
+                            .setTitle("Update Error")
+                            .setIcon(R.drawable.ic_eazy)
+                            .setMessage("Error updating password: ${e.message}")
+                            .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                            .setCancelable(false)
+                            .show()
+                        applyCustomFontToDialog(dialog)
                     }
                 } else {
                     loadingSpinner.dismiss()
-                    Toast.makeText(requireContext(), "Incorrect admin password!", Toast.LENGTH_SHORT).show()
+                    val dialog = AlertDialog.Builder(requireContext())
+                        .setTitle("Authentication Failed")
+                        .setIcon(R.drawable.ic_eazy)
+                        .setMessage("Incorrect admin password!")
+                        .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                        .setCancelable(false)
+                        .show()
+                    applyCustomFontToDialog(dialog)
                 }
             }
     }
@@ -187,13 +268,16 @@ class SearchUserFragment : Fragment() {
 
         val renewDays = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.renewDaysEditText)
 
-        builder.setView(dialogView)
+        val dialog = builder.setView(dialogView)
             .setTitle("Renew User: $targetUsername")
+            .setIcon(R.drawable.ic_eazy)
             .setPositiveButton("Renew") { _, _ ->
                 handleRenewUser(targetUsername, renewDays.text.toString())
             }
-            .setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
+            .setNegativeButton("Cancel") { d, _ -> d.cancel() }
+            .setCancelable(false)
             .show()
+        applyCustomFontToDialog(dialog)
     }
 
     private fun handleRenewUser(targetUsername: String, expiredDaysStr: String) {
@@ -201,13 +285,27 @@ class SearchUserFragment : Fragment() {
         val expiredDays = expiredDaysStr.toIntOrNull()
 
         if (expiredDays == null || expiredDays < 10 || expiredDays > 100 || expiredDays % 10 != 0) {
-            Toast.makeText(requireContext(), "Renewal days must be 10, 20, ..., 100!", Toast.LENGTH_SHORT).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Invalid Renewal Days")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("Renewal days must be a multiple of 10, between 10 and 100!")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
             return
         }
 
         val creditCost = expiredDays / 10f
         if (adminEmail == null || loginManager.getLoggedInCredit() < creditCost) {
-            Toast.makeText(requireContext(), "Not enough credit or admin not found!", Toast.LENGTH_SHORT).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Error")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("Not enough credit or admin not found!")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
             return
         }
 
@@ -228,9 +326,16 @@ class SearchUserFragment : Fragment() {
                     loadingSpinner.dismiss()
                     loginManager.updateCredit(newCredit)
                     binding.expiredDateTextView.text = "Expired: $newExpiredDate" // Update UI
-                    Toast.makeText(requireContext(), "User '$targetUsername' renewed for $expiredDays days!", Toast.LENGTH_SHORT).show()
+                    val dialog = AlertDialog.Builder(requireContext())
+                        .setTitle("Success")
+                        .setIcon(R.drawable.ic_eazy)
+                        .setMessage("User $targetUsername renewed for $expiredDays days!")
+                        .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                        .setCancelable(false)
+                        .show()
+                    applyCustomFontToDialog(dialog)
 
-                    // เพิ่ม Log สำหรับการต่ออายุผู้ใช้
+                    // Add Log for user renewal
                     val action = "Renew User"
                     val adminUsername = loginManager.getLoggedInUsername()
                     val details = "$adminUsername renewed $targetUsername for $expiredDays days from the search screen"
@@ -238,7 +343,14 @@ class SearchUserFragment : Fragment() {
 
                 }.addOnFailureListener { e ->
                     loadingSpinner.dismiss()
-                    Toast.makeText(requireContext(), "Error renewing user: ${e.message}", Toast.LENGTH_LONG).show()
+                    val dialog = AlertDialog.Builder(requireContext())
+                        .setTitle("Update Error")
+                        .setIcon(R.drawable.ic_eazy)
+                        .setMessage("Error renewing user: ${e.message}")
+                        .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                        .setCancelable(false)
+                        .show()
+                    applyCustomFontToDialog(dialog)
                 }
             }
     }
@@ -263,7 +375,14 @@ class SearchUserFragment : Fragment() {
     private fun exportUserDataToFile() {
         val adminEmail = loginManager.getLoggedInEmail()
         if (adminEmail == null) {
-            Toast.makeText(requireContext(), "Admin user not found Please log in again!", Toast.LENGTH_LONG).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Authentication Error")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("Admin user not found! Please log in again.")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
             return
         }
 
@@ -275,7 +394,14 @@ class SearchUserFragment : Fragment() {
             .addOnSuccessListener { querySnapshot ->
                 loadingSpinner.dismiss()
                 if (querySnapshot.isEmpty) {
-                    Toast.makeText(requireContext(), "No users found to export!", Toast.LENGTH_SHORT).show()
+                    val dialog = AlertDialog.Builder(requireContext())
+                        .setTitle("No Users Found")
+                        .setIcon(R.drawable.ic_eazy)
+                        .setMessage("No users found to export!")
+                        .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                        .setCancelable(false)
+                        .show()
+                    applyCustomFontToDialog(dialog)
                     return@addOnSuccessListener
                 }
 
@@ -295,9 +421,16 @@ class SearchUserFragment : Fragment() {
                     outputStream.write(csvData.toString().toByteArray())
                     outputStream.close()
                     showExportedFileOptions()
-                    Toast.makeText(requireContext(), "Data exported to file successfully!", Toast.LENGTH_SHORT).show()
+                    val dialog = AlertDialog.Builder(requireContext())
+                        .setTitle("Export Success")
+                        .setIcon(R.drawable.ic_eazy)
+                        .setMessage("Data exported to file successfully!")
+                        .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                        .setCancelable(false)
+                        .show()
+                    applyCustomFontToDialog(dialog)
 
-                    // เพิ่ม Log สำหรับการส่งออกข้อมูลผู้ใช้
+                    // Add Log for user data export
                     val action = "Export Users"
                     val adminUsername = loginManager.getLoggedInUsername()
                     val details = "$adminUsername exported $exportedUserCount users from the search screen"
@@ -305,24 +438,41 @@ class SearchUserFragment : Fragment() {
                     saveActivityLog(action, details, adminEmail, cost)
 
                 } catch (e: IOException) {
-                    Toast.makeText(requireContext(), "Error saving file: ${e.message}", Toast.LENGTH_LONG).show()
+                    val dialog = AlertDialog.Builder(requireContext())
+                        .setTitle("File Error")
+                        .setIcon(R.drawable.ic_eazy)
+                        .setMessage("Error saving file: ${e.message}")
+                        .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                        .setCancelable(false)
+                        .show()
+                    applyCustomFontToDialog(dialog)
                 }
             }
             .addOnFailureListener { e ->
                 loadingSpinner.dismiss()
-                Toast.makeText(requireContext(), "Failed to access database: ${e.message}", Toast.LENGTH_LONG).show()
+                val dialog = AlertDialog.Builder(requireContext())
+                    .setTitle("Database Error")
+                    .setIcon(R.drawable.ic_eazy)
+                    .setMessage("Failed to access database: ${e.message}")
+                    .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                    .setCancelable(false)
+                    .show()
+                applyCustomFontToDialog(dialog)
             }
     }
 
     private fun showExportedFileOptions() {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setIcon(R.drawable.ic_eazy)
-        builder.setTitle("Exported File Actions")
-        builder.setMessage("Data has been exported to 'exported_users.csv'.")
-        builder.setPositiveButton("Open") { _, _ -> openExportedFile() }
-        builder.setNegativeButton("Send") { _, _ -> sendExportedFile() }
-        builder.setNeutralButton("OK") { dialog, _ -> dialog.dismiss() }
-        builder.show()
+        val dialog = builder.setIcon(R.drawable.ic_eazy)
+            .setTitle("Exported File Actions")
+            .setIcon(R.drawable.ic_eazy)
+            .setMessage("Data has been exported to exported_users.csv!")
+            .setPositiveButton("Open") { _, _ -> openExportedFile() }
+            .setNegativeButton("Send") { _, _ -> sendExportedFile() }
+            .setNeutralButton("OK") { d, _ -> d.dismiss() }
+            .setCancelable(false)
+            .show()
+        applyCustomFontToDialog(dialog)
     }
 
     private fun openExportedFile() {
@@ -333,25 +483,39 @@ class SearchUserFragment : Fragment() {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             startActivity(intent)
         } catch (e: Exception) {
-            Toast.makeText(requireContext(), "No app found to open the file Please ensure you have a spreadsheet app installed!", Toast.LENGTH_SHORT).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Error")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("No app found to open the file. Please ensure you have a spreadsheet app installed!")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
         }
     }
 
     private fun sendExportedFile() {
-        val fileUri: Uri = FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.fileprovider", exportedFile)
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/csv"
-            putExtra(Intent.EXTRA_STREAM, fileUri)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
         try {
+            val fileUri: Uri = FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.fileprovider", exportedFile)
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/csv"
+                putExtra(Intent.EXTRA_STREAM, fileUri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
             startActivity(Intent.createChooser(intent, "Send file using"))
         } catch (e: Exception) {
-            Toast.makeText(requireContext(), "No app found to send the file!", Toast.LENGTH_SHORT).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Error")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("No app found to send the file!")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
         }
     }
 
-    // ฟังก์ชันสำหรับบันทึก Log ลง Firestore
+    // Function to save the log to Firestore
     private fun saveActivityLog(action: String, details: String, adminEmail: String, cost: Float) {
         val log = ActivityLog(
             action = action,
@@ -370,6 +534,27 @@ class SearchUserFragment : Fragment() {
             .addOnFailureListener { e ->
                 Log.w("SearchUserFragment", "Error adding activity log!", e)
             }
+    }
+
+    // Helper function to change the dialog's font
+    private fun applyCustomFontToDialog(dialog: AlertDialog) {
+        try {
+            // Try to use the font from the assets folder.
+            val typeface = Typeface.createFromAsset(requireContext().assets, "regular.ttf")
+            dialog.findViewById<TextView>(android.R.id.message)?.typeface = typeface
+            // Try to use the font for the title as well.
+            dialog.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.typeface = typeface
+        } catch (e: Exception) {
+            // If not found in assets, try from the res/font folder.
+            try {
+                val typeface = resources.getFont(R.font.regular)
+                dialog.findViewById<TextView>(android.R.id.message)?.typeface = typeface
+                dialog.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.typeface = typeface
+            } catch (e2: Exception) {
+                // Log a specific error if the font is not found in both locations.
+                Log.e("SearchUserFragment", "Custom font not found or failed to apply: ${e.message} and ${e2.message}")
+            }
+        }
     }
 
     override fun onDestroyView() {

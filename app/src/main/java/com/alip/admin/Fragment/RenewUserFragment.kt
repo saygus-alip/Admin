@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.alip.admin.LoginManager
@@ -21,6 +20,8 @@ import com.alip.admin.Data.ActivityLog
 import com.google.firebase.Timestamp
 import android.util.Log
 import com.alip.admin.R
+import android.graphics.Typeface
+import android.widget.TextView
 
 class RenewUserFragment : Fragment() {
 
@@ -53,24 +54,45 @@ class RenewUserFragment : Fragment() {
         val expiredDaysStr = binding.renewEditText.text.toString().trim()
         val adminEmail = loginManager.getLoggedInEmail()
 
-        // 1. ตรวจสอบข้อมูลที่กรอกเข้ามา
+        // 1. Check input data
         if (targetUsername.isEmpty() || expiredDaysStr.isEmpty()) {
-            Toast.makeText(requireContext(), "Please enter username and renew days!", Toast.LENGTH_SHORT).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Input Required")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("Please enter a username and renewal days.")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
             return
         }
 
         val expiredDays = expiredDaysStr.toIntOrNull()
         if (expiredDays == null || expiredDays < 10 || expiredDays > 100 || expiredDays % 10 != 0) {
-            binding.textInputLayoutRenew.error = "Renewal days must be 10, 20, ..., 100!"
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Invalid Renewal Days")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("Renewal days must be a multiple of 10, between 10 and 100.")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
             return
         }
 
         if (adminEmail == null) {
-            Toast.makeText(requireContext(), "Admin user not found! Please log in again!", Toast.LENGTH_LONG).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("Authentication Error")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("Admin user not found! Please log in again.")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
             return
         }
 
-        // 2. คำนวณค่าใช้จ่าย Credit และตรวจสอบ
+        // 2. Calculate credit cost and check
         val creditCost = expiredDays / 10f
         val currentCredit = loginManager.getLoggedInCredit()
 
@@ -79,10 +101,10 @@ class RenewUserFragment : Fragment() {
             return
         }
 
-        // แสดงหน้าโหลด
+        // Show loading spinner
         loadingSpinner.show(parentFragmentManager, "loading_spinner")
 
-        // 3. ตรวจสอบสิทธิ์และดึงข้อมูล User
+        // 3. Check permissions and retrieve user data
         db.collection("Users").document(targetUsername).get()
             .addOnSuccessListener { userDocument ->
                 if (userDocument.exists()) {
@@ -90,11 +112,11 @@ class RenewUserFragment : Fragment() {
                     val currentExpiredDateStr = userDocument.getString("Expired")
 
                     if (createdByEmail == adminEmail) {
-                        // 4. คำนวณวันหมดอายุใหม่
+                        // 4. Calculate new expiration date
                         val newExpiredDate = calculateNewExpiredDate(currentExpiredDateStr, expiredDays)
                         val newCredit = currentCredit - creditCost
 
-                        // 5. ใช้ runBatch เพื่ออัปเดตข้อมูลพร้อมกัน
+                        // 5. Use runBatch to update data simultaneously
                         db.runBatch { batch ->
                             val userRef = db.collection("Users").document(targetUsername)
                             batch.update(userRef, "Expired", newExpiredDate)
@@ -104,10 +126,18 @@ class RenewUserFragment : Fragment() {
                         }.addOnSuccessListener {
                             loadingSpinner.dismiss()
                             loginManager.updateCredit(newCredit)
-                            Toast.makeText(requireContext(), "User '$targetUsername' renewed for $expiredDays days! Your credit has been deducted.", Toast.LENGTH_SHORT).show()
+                            val dialog = AlertDialog.Builder(requireContext())
+                                .setTitle("Success")
+                                .setIcon(R.drawable.ic_eazy)
+                                .setMessage("User $targetUsername renewed for $expiredDays days! Your credit has been deducted.")
+                                .setCancelable(false)
+                                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                                .show()
+                            applyCustomFontToDialog(dialog)
+
                             binding.renewEditText.text?.clear()
 
-                            // แก้ไข Log สำหรับการต่ออายุผู้ใช้เพื่อให้สามารถปรับแต่งข้อความได้
+                            // Update log for user renewal
                             val adminUsername = loginManager.getLoggedInUsername()
                             val action = "Renew User"
                             val details = "$adminUsername renewed $targetUsername for $expiredDays days"
@@ -115,20 +145,48 @@ class RenewUserFragment : Fragment() {
 
                         }.addOnFailureListener { e ->
                             loadingSpinner.dismiss()
-                            Toast.makeText(requireContext(), "Error renewing user: ${e.message}", Toast.LENGTH_LONG).show()
+                            val dialog = AlertDialog.Builder(requireContext())
+                                .setTitle("Update Error")
+                                .setIcon(R.drawable.ic_eazy)
+                                .setMessage("Error renewing user: ${e.message}")
+                                .setCancelable(false)
+                                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                                .show()
+                            applyCustomFontToDialog(dialog)
                         }
                     } else {
                         loadingSpinner.dismiss()
-                        Toast.makeText(requireContext(), "You can only renew users you created!", Toast.LENGTH_SHORT).show()
+                        val dialog = AlertDialog.Builder(requireContext())
+                            .setTitle("Unauthorized Action")
+                            .setIcon(R.drawable.ic_eazy)
+                            .setMessage("You can only renew users you created!")
+                            .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                            .setCancelable(false)
+                            .show()
+                        applyCustomFontToDialog(dialog)
                     }
                 } else {
                     loadingSpinner.dismiss()
-                    Toast.makeText(requireContext(), "User '$targetUsername' not found!", Toast.LENGTH_SHORT).show()
+                    val dialog = AlertDialog.Builder(requireContext())
+                        .setTitle("User Not Found")
+                        .setIcon(R.drawable.ic_eazy)
+                        .setMessage("User '$targetUsername' not found!")
+                        .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                        .setCancelable(false)
+                        .show()
+                    applyCustomFontToDialog(dialog)
                 }
             }
             .addOnFailureListener { e ->
                 loadingSpinner.dismiss()
-                Toast.makeText(requireContext(), "Failed to access database: ${e.message}", Toast.LENGTH_LONG).show()
+                val dialog = AlertDialog.Builder(requireContext())
+                    .setTitle("Database Error")
+                    .setIcon(R.drawable.ic_eazy)
+                    .setMessage("Failed to access database: ${e.message}")
+                    .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                    .setCancelable(false)
+                    .show()
+                applyCustomFontToDialog(dialog)
             }
     }
 
@@ -139,7 +197,7 @@ class RenewUserFragment : Fragment() {
         if (currentDateStr != null && currentDateStr.isNotBlank()) {
             val currentDate = dateFormat.parse(currentDateStr)
             if (currentDate != null) {
-                // ถ้าวันหมดอายุเดิมยังไม่ถึง ให้ต่ออายุจากวันนั้น
+                // If the old expiration date has not passed yet, renew from that date.
                 if (currentDate.after(Date())) {
                     calendar.time = currentDate
                 }
@@ -150,7 +208,7 @@ class RenewUserFragment : Fragment() {
         return dateFormat.format(calendar.time)
     }
 
-    // ฟังก์ชันใหม่สำหรับบันทึก Log ลง Firestore
+    // Function to save the log to Firestore
     private fun saveActivityLog(action: String, details: String, adminEmail: String, cost: Float) {
         val log = ActivityLog(
             action = action,
@@ -172,12 +230,35 @@ class RenewUserFragment : Fragment() {
     }
 
     private fun showCreditAlertDialog() {
-        AlertDialog.Builder(requireContext())
+        val dialog = AlertDialog.Builder(requireContext())
             .setIcon(R.drawable.ic_eazy)
             .setTitle("Not Enough Credit")
             .setMessage("You do not have enough credit to renew this user")
-            .setPositiveButton("OK") { _, _ -> }
+            .setPositiveButton("OK") { d, _ -> d.dismiss() }
+            .setCancelable(false)
             .show()
+        applyCustomFontToDialog(dialog)
+    }
+
+    // Helper function to change the dialog's font
+    private fun applyCustomFontToDialog(dialog: AlertDialog) {
+        try {
+            // Try to use the font from the assets folder.
+            val typeface = Typeface.createFromAsset(requireContext().assets, "regular.ttf")
+            dialog.findViewById<TextView>(android.R.id.message)?.typeface = typeface
+            // Try to use the font for the title as well.
+            dialog.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.typeface = typeface
+        } catch (e: Exception) {
+            // If not found in assets, try from the res/font folder.
+            try {
+                val typeface = resources.getFont(R.font.regular)
+                dialog.findViewById<TextView>(android.R.id.message)?.typeface = typeface
+                dialog.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.typeface = typeface
+            } catch (e2: Exception) {
+                // Log a specific error if the font is not found in both locations.
+                Log.e("RenewUserFragment", "Custom font not found or failed to apply: ${e.message} and ${e2.message}")
+            }
+        }
     }
 
     override fun onDestroyView() {

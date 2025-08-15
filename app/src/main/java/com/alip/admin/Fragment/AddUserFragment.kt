@@ -19,6 +19,8 @@ import com.alip.admin.LoadingSpinnerFragment
 import com.alip.admin.Data.ActivityLog
 import com.google.firebase.Timestamp
 import java.util.Date
+import android.graphics.Typeface
+import android.widget.TextView
 
 class AddUserFragment : Fragment() {
 
@@ -80,6 +82,7 @@ class AddUserFragment : Fragment() {
 
         val newCredit = currentCredit - creditCost
         val hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt())
+        val expiredDate = calculateExpiredDate(expiredDays)
 
         val newUser = hashMapOf(
             "Username" to username,
@@ -88,7 +91,7 @@ class AddUserFragment : Fragment() {
             "CreatedBy" to adminEmail,
             "isLogin" to false,
             "Seller" to adminUsername,
-            "Expired" to calculateExpiredDate(expiredDays)
+            "Expired" to expiredDate
         )
 
         db.runBatch { batch ->
@@ -100,9 +103,11 @@ class AddUserFragment : Fragment() {
         }.addOnSuccessListener {
             loadingSpinner.dismiss()
             loginManager.updateCredit(newCredit)
-            Toast.makeText(requireContext(), "User $username registered successfully! Your credit has been deducted!", Toast.LENGTH_SHORT).show()
 
-            // แก้ไข: บันทึก Activity Log ที่สมบูรณ์ยิ่งขึ้น
+            // แสดง Dialog ที่คุณต้องการ
+            showRegistrationSuccessDialog(username, expiredDate)
+
+            // บันทึก Activity Log
             val action = "Add User"
             val details = "$adminUsername added $username with $expiredDays days"
             saveActivityLog(action, details, adminEmail, creditCost.toFloat())
@@ -114,6 +119,42 @@ class AddUserFragment : Fragment() {
             Toast.makeText(requireContext(), "Error registering user: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
+
+    /**
+     * Shows a dialog with the registered username and their expiration date.
+     * This uses setMessage() as requested and applies a custom font.
+     */
+    private fun showRegistrationSuccessDialog(username: String, expired: String) {
+        val message = "Username: $username\n" +
+                "Expired: $expired"
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setIcon(R.drawable.ic_eazy)
+            .setTitle("Account Registered")
+            .setMessage(message)
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+                Toast.makeText(requireContext(), "User $username registered successfully! Your credit has been deducted!", Toast.LENGTH_SHORT).show()
+            }
+            .setCancelable(false)
+            .show()
+
+        // เข้าถึง TextView ของข้อความใน Dialog โดยตรงเพื่อเปลี่ยนฟอนต์
+        try {
+            // Check if the font is in the 'assets' folder
+            val typeface = Typeface.createFromAsset(requireContext().assets, "regular.ttf")
+            dialog.findViewById<TextView>(android.R.id.message)?.typeface = typeface
+        } catch (e: Exception) {
+            // Fallback: Check if the font is in the 'res/font' folder
+            try {
+                val typeface = resources.getFont(R.font.regular)
+                dialog.findViewById<TextView>(android.R.id.message)?.typeface = typeface
+            } catch (e2: Exception) {
+                Log.e("AddUserFragment", "Custom font not found or failed to apply: ${e.message} and ${e2.message}")
+            }
+        }
+    }
+
 
     // ฟังก์ชันสำหรับบันทึก Log ลง Firestore
     private fun saveActivityLog(action: String, details: String, adminEmail: String, cost: Float) {

@@ -22,6 +22,9 @@ import com.alip.admin.Data.ActivityLog
 import com.google.firebase.Timestamp
 import java.util.Date
 import android.util.Log
+import android.graphics.Typeface
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 
 class ExportUserFragment : Fragment() {
 
@@ -64,7 +67,14 @@ class ExportUserFragment : Fragment() {
         val adminEmail = loginManager.getLoggedInEmail()
 
         if (adminEmail == null) {
-            Toast.makeText(requireContext(), "Admin user not found! Please log in again!", Toast.LENGTH_LONG).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("An Error Occurred")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("Admin user not found! Please log in again!")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
             return
         }
 
@@ -76,17 +86,24 @@ class ExportUserFragment : Fragment() {
             .addOnSuccessListener { querySnapshot ->
                 loadingSpinner.dismiss()
                 if (querySnapshot.isEmpty) {
-                    Toast.makeText(requireContext(), "No users found to export!", Toast.LENGTH_SHORT).show()
+                    val dialog = AlertDialog.Builder(requireContext())
+                        .setTitle("No Data Found")
+                        .setIcon(R.drawable.ic_eazy)
+                        .setMessage("No users created for export found!")
+                        .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                        .setCancelable(false)
+                        .show()
+                    applyCustomFontToDialog(dialog)
                     return@addOnSuccessListener
                 }
 
                 val exportedUserCount = querySnapshot.size()
 
-                // สร้าง header สำหรับไฟล์ CSV
+                // Create header for the CSV file
                 val header = "Username,Expired,CreatedBy\n"
                 val csvData = StringBuilder(header)
 
-                // ดึงข้อมูลแต่ละ user มาสร้างเป็นแถวในไฟล์ CSV
+                // Retrieve each user's data to create a row in the CSV file
                 querySnapshot.documents.forEach { document ->
                     val username = document.id
                     val expired = document.getString("Expired") ?: ""
@@ -100,7 +117,7 @@ class ExportUserFragment : Fragment() {
                     outputStream.close()
                     Toast.makeText(requireContext(), "Data exported to file successfully!", Toast.LENGTH_SHORT).show()
 
-                    // เพิ่ม Log สำหรับการส่งออกข้อมูลผู้ใช้
+                    // Add log for exporting user data
                     val adminUsername = loginManager.getLoggedInUsername()
                     val action = "Export Users"
                     val details = "$adminUsername exported $exportedUserCount users"
@@ -108,41 +125,76 @@ class ExportUserFragment : Fragment() {
                     saveActivityLog(action, details, adminEmail, cost)
 
                 } catch (e: IOException) {
-                    Toast.makeText(requireContext(), "Error saving file: ${e.message}", Toast.LENGTH_LONG).show()
+                    val dialog = AlertDialog.Builder(requireContext())
+                        .setTitle("Save Error")
+                        .setIcon(R.drawable.ic_eazy)
+                        .setMessage("Error saving file: ${e.message}")
+                        .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                        .setCancelable(false)
+                        .show()
+                    applyCustomFontToDialog(dialog)
                 }
             }
             .addOnFailureListener { e ->
                 loadingSpinner.dismiss()
-                Toast.makeText(requireContext(), "Failed to access database: ${e.message}", Toast.LENGTH_LONG).show()
+                val dialog = AlertDialog.Builder(requireContext())
+                    .setTitle("Data Access Error")
+                    .setIcon(R.drawable.ic_eazy)
+                    .setMessage("Failed to access database: ${e.message}")
+                    .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                    .setCancelable(false)
+                    .show()
+                applyCustomFontToDialog(dialog)
             }
     }
 
     private fun openExportedFile() {
         if (!exportedFile.exists() || exportedFile.length() == 0L) {
-            Toast.makeText(requireContext(), "Please export data first!", Toast.LENGTH_SHORT).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("File Not Ready")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("Please export data first!")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
             return
         }
 
         try {
             val fileUri: Uri = FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.fileprovider", exportedFile)
             val intent = Intent(Intent.ACTION_VIEW)
-            intent.setDataAndType(fileUri, "text/csv") // เปลี่ยนเป็น text/csv
+            intent.setDataAndType(fileUri, "text/csv") // Change to text/csv
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             startActivity(intent)
         } catch (e: Exception) {
-            Toast.makeText(requireContext(), "No app found to open the file!", Toast.LENGTH_SHORT).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("No App Found")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("No app found to open the file!")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
         }
     }
 
     private fun sendExportedFile() {
         if (!exportedFile.exists() || exportedFile.length() == 0L) {
-            Toast.makeText(requireContext(), "Please export data first!", Toast.LENGTH_SHORT).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("File Not Ready")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("Please export data first!")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
             return
         }
 
         val fileUri: Uri = FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.fileprovider", exportedFile)
         val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/csv" // เปลี่ยนเป็น text/csv
+            type = "text/csv" // Change to text/csv
             putExtra(Intent.EXTRA_STREAM, fileUri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
@@ -150,11 +202,18 @@ class ExportUserFragment : Fragment() {
         try {
             startActivity(Intent.createChooser(intent, "Send file using!"))
         } catch (e: Exception) {
-            Toast.makeText(requireContext(), "No app found to send the file!", Toast.LENGTH_SHORT).show()
+            val dialog = AlertDialog.Builder(requireContext())
+                .setTitle("No App Found")
+                .setIcon(R.drawable.ic_eazy)
+                .setMessage("No app found to send the file!")
+                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                .setCancelable(false)
+                .show()
+            applyCustomFontToDialog(dialog)
         }
     }
 
-    // ฟังก์ชันสำหรับบันทึก Log ลง Firestore
+    // Function to save Log to Firestore
     private fun saveActivityLog(action: String, details: String, adminEmail: String, cost: Float) {
         val log = ActivityLog(
             action = action,
@@ -173,6 +232,23 @@ class ExportUserFragment : Fragment() {
             .addOnFailureListener { e ->
                 Log.w("ExportUserFragment", "Error adding activity log!", e)
             }
+    }
+
+    // Helper function to change the dialog's font
+    private fun applyCustomFontToDialog(dialog: AlertDialog) {
+        try {
+            // Try to use the font from the assets folder
+            val typeface = Typeface.createFromAsset(requireContext().assets, "regular.ttf")
+            dialog.findViewById<TextView>(android.R.id.message)?.typeface = typeface
+        } catch (e: Exception) {
+            // If not found in assets, try from the res/font folder
+            try {
+                val typeface = resources.getFont(R.font.regular)
+                dialog.findViewById<TextView>(android.R.id.message)?.typeface = typeface
+            } catch (e2: Exception) {
+                Log.e("ExportUserFragment", "Custom font not found or failed to apply: ${e.message} and ${e2.message}")
+            }
+        }
     }
 
     override fun onDestroyView() {
